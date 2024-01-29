@@ -78,6 +78,8 @@ class Moves{
 
 
     public:
+
+        Moves(): index(0), len(0){} 
         Move getMove();
         void next();
         bool seek(int seekIndex);
@@ -116,9 +118,7 @@ class Board{
 
     uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
     uint64_t straightMoves(int position, uint64_t all_piees, uint64_t other_pieces);
-    uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);
-    void processMoveBoard(Moves moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
-    
+    uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);    
     
 
     public:

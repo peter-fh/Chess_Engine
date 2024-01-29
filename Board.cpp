@@ -77,19 +77,6 @@ uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other
 }
 
 
-void Board::processMoveBoard(Moves moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
-    while (move_board){
-        Move move;
-        int move_square = rays.leastSignificant(move_board);
-        move.squares[0] = piece_position;
-        move.squares[1] = move_square;
-        move.type = piece_type;
-        move.take = (1ULL << move_square) & other_pieces;
-        moves.setMove(move);
-   }
-}
-
-
 Moves Board::getMoves(){
     Moves moves;
 
@@ -128,8 +115,9 @@ void Board::display_bitboard(uint64_t board){
 
 void Board::debug(){
     uint64_t piece = 0x0000000200000000;
-    uint64_t all_pieces = 0xFF818181818181FF | piece;
-    uint64_t other_pieces = 0;
+    uint64_t other_pieces = 0xFF818181818181FF;
+    uint64_t all_pieces =  other_pieces | piece;
+    
     int piece_position = rays.leastSignificant(piece);
 
     
@@ -148,7 +136,10 @@ void Board::debug(){
     display_bitboard(diagonal_move_board);
 
     Moves moves;
-    //moves.processMoveBoard(straight_move_board, other_pieces, piece_position, 1, rays);
+    moves.processMoveBoard(straight_move_board, other_pieces, piece_position, 1, rays);
+    moves.processMoveBoard(diagonal_move_board, other_pieces, piece_position, 1, rays);
+    
+    moves.displayMoves();
 
 
 }

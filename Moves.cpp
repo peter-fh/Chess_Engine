@@ -1,4 +1,5 @@
 #include "board.h"
+#include <cstdint>
 #include <iostream>
 
 
@@ -14,6 +15,11 @@ void Moves::next(){
 bool Moves::seek(int seekIndex){
     if (seekIndex >= len){
         return false;
+    }
+
+    if (seekIndex == -1){
+        seekIndex = len - 1;
+        return true;
     }
 
     index = seekIndex;
@@ -39,6 +45,7 @@ bool Moves::hasNext(){
 void Moves::setMove(Move inputMove){
     moves[index] = inputMove;
     index++;
+    len++;
 }
 
 void Moves::setLast(){
@@ -57,8 +64,11 @@ void Moves::displayMoves(){
         return;
     }
 
+    seek(0);
 
+    cout << getMove().moveCode() << " ";
     while (hasNext()){
+        next();
         cout << getMove().moveCode() << " ";
     }
 }
@@ -68,11 +78,14 @@ void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int pie
     while (move_board){
         Move move;
         int move_square = rays.leastSignificant(move_board);
+        uint64_t move_piece = 1ULL << move_square;
         move.squares[0] = piece_position;
         move.squares[1] = move_square;
         move.type = piece_type;
-        move.take = (1ULL << move_square) & other_pieces;
+        move.take = move_piece & other_pieces;
         setMove(move);
+
+        move_board ^= move_piece;
    }
 }
 
