@@ -149,3 +149,89 @@ uint64_t Rays::castRay(int position, int direction){
 
     
 }
+
+
+int Rays::slowLeastSignificant (int num){
+    for (int i=0; i < 16; i++){
+        if ((1ULL << i) & num)
+            return i;
+    }
+
+    return -1;
+}
+
+
+int Rays::slowMostSignificant (int num){
+    for (int i=15; i >= 0; i--){
+        if ((1ULL << i) & num)
+            return i;
+    }
+
+    return -1;
+}
+
+
+
+void Rays::initializeBitPositions(){
+    for (int i=0; i < 0xffff; i++){
+        least_significant_positions[i] = slowLeastSignificant(i);
+        most_significant_positions[i] = slowMostSignificant(i);
+    }
+}
+
+
+
+const uint64_t LEAST_16 =           0x000000000000FFFF;
+const uint64_t SECOND_LEAST_16 =    0x00000000FFFF0000;
+const uint64_t SECOND_MOST_16 =     0x0000FFFF00000000;
+const uint64_t MOST_16 =            0xFFFF000000000000;
+
+
+int Rays::leastSignificant(uint64_t piece){
+
+    if (LEAST_16 & piece){
+        piece &= LEAST_16;
+        return least_significant_positions[piece];
+    }
+
+    if (SECOND_LEAST_16 & piece){
+        piece &= SECOND_LEAST_16;
+        return least_significant_positions[piece >> 16] + 16;
+    }
+
+    if (SECOND_MOST_16 & piece){
+        piece &= SECOND_MOST_16;
+        return least_significant_positions[piece >> 32]+32;
+    }
+
+    if (MOST_16 & piece){
+        piece &= MOST_16;
+        return least_significant_positions[piece >> 48]+48;
+    }
+
+    return -1;
+    
+}
+
+
+int Rays::mostSignificant(uint64_t piece){
+
+    if (MOST_16 & piece){
+        return most_significant_positions[piece >> 48]+48;
+    }
+
+    if (SECOND_MOST_16 & piece){
+        return most_significant_positions[piece >> 32]+32;
+    }
+
+    if (SECOND_LEAST_16 & piece){
+        return most_significant_positions[piece >> 16] + 16;
+    }
+
+    if (LEAST_16 & piece){
+        return most_significant_positions[piece];
+    }
+
+    return -1;
+    
+}

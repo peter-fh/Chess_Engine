@@ -8,94 +8,12 @@ int Board::turn(){
 }
 
 
-bool Board::isLegal(Move move){
-    // TODO
-    if (move.equals(move))
+
+bool Board::loneBit(uint64_t piece){
+    if (piece ^ (piece & -piece))
         return true;
+
     return false;
-}
-
-
-int Board::slowLeastSignificant (int num){
-    for (int i=0; i < 16; i++){
-        if ((1ULL << i) & num)
-            return i;
-    }
-
-    return -1;
-}
-
-
-int Board::slowMostSignificant (int num){
-    for (int i=15; i >= 0; i--){
-        if ((1ULL << i) & num)
-            return i;
-    }
-
-    return -1;
-}
-
-
-void Board::initializeBitPositions(){
-    for (int i=0; i < 0xffff; i++){
-        least_significant_positions[i] = slowLeastSignificant(i);
-        most_significant_positions[i] = slowMostSignificant(i);
-    }
-}
-
-
-const uint64_t LEAST_16 =           0x000000000000FFFF;
-const uint64_t SECOND_LEAST_16 =    0x00000000FFFF0000;
-const uint64_t SECOND_MOST_16 =     0x0000FFFF00000000;
-const uint64_t MOST_16 =            0xFFFF000000000000;
-
-int Board::leastSignificant(uint64_t piece){
-
-    if (LEAST_16 & piece){
-        piece &= LEAST_16;
-        return least_significant_positions[piece];
-    }
-
-    if (SECOND_LEAST_16 & piece){
-        piece &= SECOND_LEAST_16;
-        return least_significant_positions[piece >> 16] + 16;
-    }
-
-    if (SECOND_MOST_16 & piece){
-        piece &= SECOND_MOST_16;
-        return least_significant_positions[piece >> 32]+32;
-    }
-
-    if (MOST_16 & piece){
-        piece &= MOST_16;
-        return least_significant_positions[piece >> 48]+48;
-    }
-
-    return -1;
-    
-}
-
-
-int Board::mostSignificant (uint64_t piece){
-
-    if (MOST_16 & piece){
-        return most_significant_positions[piece >> 48]+48;
-    }
-
-    if (SECOND_MOST_16 & piece){
-        return most_significant_positions[piece >> 32]+32;
-    }
-
-    if (SECOND_LEAST_16 & piece){
-        return most_significant_positions[piece >> 16] + 16;
-    }
-
-    if (LEAST_16 & piece){
-        return most_significant_positions[piece];
-    }
-
-    return -1;
-    
 }
 
 
@@ -113,9 +31,9 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
     }
         
     if (direction > 0)
-        collision_position = leastSignificant(collisions);
+        collision_position = rays.leastSignificant(collisions);
     else {
-        collision_position = mostSignificant(collisions);
+        collision_position = rays.mostSignificant(collisions);
     }
     
     uint64_t collision_mask = ~rays.castRay(collision_position, direction);
@@ -135,7 +53,7 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
 }
 
 
-uint64_t Board::horizontalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
+uint64_t Board::straightMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
     uint64_t move_board = 0ULL;
 
     move_board |= directionalMoves(position, NORTH, all_pieces, other_pieces);
@@ -159,6 +77,42 @@ uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other
 }
 
 
+void Board::processMoveBoard(Moves moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
+    while (move_board){
+        Move move;
+        int move_square = rays.leastSignificant(move_board);
+        move.squares[0] = piece_position;
+        move.squares[1] = move_square;
+        move.type = piece_type;
+        move.take = (1ULL << move_square) & other_pieces;
+        moves.setMove(move);
+   }
+}
+
+
+Moves Board::getMoves(){
+    Moves moves;
+
+    uint64_t white_pieces = 0;
+    uint64_t black_pieces = 0; 
+    for (int i=0; i < 6; i++){
+        white_pieces |= pieces[i];
+        black_pieces |= pieces[i+6];
+    }
+
+    uint64_t all_pieces = white_pieces | black_pieces;
+    uint64_t same_pieces = white_pieces;
+    uint64_t other_pieces = black_pieces;
+    if (half_turn % 2 == 1){
+        same_pieces = black_pieces;
+        other_pieces = white_pieces;
+    }
+
+
+    return moves;
+}
+
+
 void Board::display_bitboard(uint64_t board){
     for (int i=63; i >= 0; i--){
         if ((1ULL << i) & board)
@@ -172,20 +126,11 @@ void Board::display_bitboard(uint64_t board){
 }
 
 
-bool Board::loneBit(uint64_t piece){
-    if (piece ^ (piece & -piece))
-        return true;
-
-    return false;
-}
-
-
 void Board::debug(){
     uint64_t piece = 0x0000000200000000;
     uint64_t all_pieces = 0xFF818181818181FF | piece;
     uint64_t other_pieces = 0;
-    int piece_position = leastSignificant(piece);
-
+    int piece_position = rays.leastSignificant(piece);
 
     
     cout << "All pieces:\n";
@@ -194,15 +139,18 @@ void Board::debug(){
     cout << "Other pieces:\n";
     display_bitboard(other_pieces);
     
-    cout << "Horizontal:\n";
-    display_bitboard(horizontalMoves(piece_position, all_pieces, other_pieces));
-    
-
+    cout << "Straight:\n";
+    uint64_t straight_move_board = straightMoves(piece_position, all_pieces, other_pieces);
+    display_bitboard(straight_move_board);
 
     cout << "Diagonal:\n";
-    display_bitboard(diagonalMoves(piece_position, all_pieces, other_pieces));
+    uint64_t diagonal_move_board = diagonalMoves(piece_position, all_pieces, other_pieces);
+    display_bitboard(diagonal_move_board);
 
-    
+    Moves moves;
+    //moves.processMoveBoard(straight_move_board, other_pieces, piece_position, 1, rays);
+
+
 }
 
 int main(){

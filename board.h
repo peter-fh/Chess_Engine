@@ -5,6 +5,48 @@
 using namespace std;
 
 
+
+const int POSITIVE = 1;
+const int NEGATIVE = -1;
+
+// Bitshift left by this amount travels one square in this direction:
+const int WEST = 1;
+const int NORTHWEST = 9;
+const int NORTH = 8;
+const int NORTHEAST = 7;
+const int EAST = -1;
+const int SOUTHEAST = -9;
+const int SOUTH = -8;
+const int SOUTHWEST = -7;
+
+
+
+class Rays{
+    uint64_t horizontal[8];
+    uint64_t vertical[8];
+    uint64_t diagonal[15];
+    uint64_t counter_diagonal[15];
+    uint64_t least_significant_positions[65536];
+    uint64_t most_significant_positions[65536];
+    
+    int slowLeastSignificant(int piece);
+    int slowMostSignificant(int piece);
+
+
+    public:
+        void initializeBitPositions();
+        void loadRays();
+        uint64_t getHorizontal(int position);
+        uint64_t getVertical(int position);
+        uint64_t getDiagonal(int position);
+        uint64_t getCounterDiagonal(int position);
+        uint64_t directionalMask(int position, int direction);
+        uint64_t castRay(int position, int direction);
+        int leastSignificant(uint64_t piece);
+        int mostSignificant(uint64_t piece);
+};
+
+
 const int FROM = 0;
 const int TO = 1;
 
@@ -44,43 +86,11 @@ class Moves{
         void setMove(Move move);
         void setLast();
         int length();
+        void displayMoves();
+        void processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type, Rays rays);
         
 
 };
-
-
-const int POSITIVE = 1;
-const int NEGATIVE = -1;
-
-// Bitshift left by this amount travels one square in this direction:
-const int WEST = 1;
-const int NORTHWEST = 9;
-const int NORTH = 8;
-const int NORTHEAST = 7;
-const int EAST = -1;
-const int SOUTHEAST = -9;
-const int SOUTH = -8;
-const int SOUTHWEST = -7;
-
-
-
-class Rays{
-    uint64_t horizontal[8];
-    uint64_t vertical[8];
-    uint64_t diagonal[15];
-    uint64_t counter_diagonal[15];
-
-
-    public:
-        void loadRays();
-        uint64_t getHorizontal(int position);
-        uint64_t getVertical(int position);
-        uint64_t getDiagonal(int position);
-        uint64_t getCounterDiagonal(int position);
-        uint64_t directionalMask(int position, int direction);
-        uint64_t castRay(int position, int direction);
-};
-
 
 
 const int KING = 0;
@@ -101,32 +111,27 @@ class Board{
 
     // Utility
     Rays rays;
-    uint64_t least_significant_positions[65536];
-    uint64_t most_significant_positions[65536];
     
 
-    void initializeBitPositions();
-    int slowLeastSignificant(int piece);
-    int slowMostSignificant(int piece);
-    int leastSignificant(uint64_t piece);
-    int mostSignificant(uint64_t piece);
+
     uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
-    uint64_t horizontalMoves(int position, uint64_t all_piees, uint64_t other_pieces);
+    uint64_t straightMoves(int position, uint64_t all_piees, uint64_t other_pieces);
     uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);
+    void processMoveBoard(Moves moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
     
     
 
     public:
         void display_bitboard(uint64_t board);
         Board() {
-            initializeBitPositions();
+            rays.initializeBitPositions();
             rays.loadRays();
         }
         bool loneBit(uint64_t piece);
         Moves legal_moves;
         int turn();
         bool isLegal(Move move);
-        Moves determineLegalMoves();
+        Moves getMoves();
         void makeMove(Move move);
         void push();
         void pop();

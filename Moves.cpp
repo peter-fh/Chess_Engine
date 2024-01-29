@@ -1,4 +1,5 @@
 #include "board.h"
+#include <iostream>
 
 
 Move Moves::getMove(){
@@ -47,5 +48,31 @@ void Moves::setLast(){
 
 int Moves::length(){
     return len;
+}
+
+
+void Moves::displayMoves(){
+    if (isNull()){
+        cout << "No moves\n";
+        return;
+    }
+
+
+    while (hasNext()){
+        cout << getMove().moveCode() << " ";
+    }
+}
+
+
+void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type, Rays rays){
+    while (move_board){
+        Move move;
+        int move_square = rays.leastSignificant(move_board);
+        move.squares[0] = piece_position;
+        move.squares[1] = move_square;
+        move.type = piece_type;
+        move.take = (1ULL << move_square) & other_pieces;
+        setMove(move);
+   }
 }
 
