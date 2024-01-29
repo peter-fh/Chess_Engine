@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <iostream>
 #include "board.h"
 using namespace std;
 
@@ -44,16 +43,5 @@ bool Move::equals(Move move){
 }
 
 
-int main(){
-    Move move;
-    cout << move.moveCode() << "\n";
-    move.squares[0] = 55;
-    move.squares[1] = 63;
-    move.type = 1;
-    move.take = true;
-    cout << move.moveCode() << "\n";
-
-
-}
 
 

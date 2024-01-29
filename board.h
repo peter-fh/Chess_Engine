@@ -50,14 +50,18 @@ class Moves{
 
 const int POSITIVE = 1;
 const int NEGATIVE = -1;
-const int NORTH = 0;
-const int NORTHEAST = 1;
-const int EAST = 2;
-const int SOUTHEAST = 3;
-const int SOUTH = 4;
-const int SOUTHWEST = 5;
-const int WEST = 6;
-const int NORTHWEST = 7;
+
+// Bitshift left by this amount travels one square in this direction:
+const int WEST = 1;
+const int NORTHWEST = 9;
+const int NORTH = 8;
+const int NORTHEAST = 7;
+const int EAST = -1;
+const int SOUTHEAST = -9;
+const int SOUTH = -8;
+const int SOUTHWEST = -7;
+
+
 
 class Rays{
     uint64_t horizontal[8];
@@ -105,7 +109,7 @@ class Board{
     int slowMostSignificant(int piece);
     int leastSignificant(uint64_t piece);
     int mostSignificant(uint64_t piece);
-    uint64_t directionalMoves(int position, int direction, int all_pieces, int other_pieces);
+    uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
     
     
 
@@ -124,6 +128,7 @@ class Board{
         void push();
         void pop();
         string fen();
+        void debug();
     
 
 

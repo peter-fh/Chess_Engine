@@ -49,8 +49,3 @@ int Moves::length(){
     return len;
 }
 
-
-int main(){
-    Moves moves;
-    
-}
