@@ -75,6 +75,7 @@ int Board::leastSignificant(uint64_t piece){
     
 }
 
+
 int Board::mostSignificant (uint64_t piece){
 
     if (MOST_16 & piece){
@@ -97,6 +98,7 @@ int Board::mostSignificant (uint64_t piece){
     
 }
 
+
 uint64_t Board::directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces){
     uint64_t piece = 1ULL << position;
     uint64_t move_board;
@@ -106,7 +108,7 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
     uint64_t collisions = directional_ray & (all_pieces ^ piece);
 
 
-    if (!collisions){
+    if (!collisions){  
         return directional_ray ^ piece;
     }
         
@@ -133,11 +135,29 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
 }
 
 
-Moves Board::determineLegalMoves(){
-    Moves legal_moves;
+uint64_t Board::horizontalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
+    uint64_t move_board = 0ULL;
 
-    return legal_moves;
+    move_board |= directionalMoves(position, NORTH, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, EAST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, SOUTH, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, WEST, all_pieces, other_pieces);
+
+    return move_board;
 }
+
+
+uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
+    uint64_t move_board = 0ULL;
+
+    move_board |= directionalMoves(position, NORTHEAST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, SOUTHEAST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, SOUTHWEST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, NORTHWEST, all_pieces, other_pieces);
+
+    return move_board;
+}
+
 
 void Board::display_bitboard(uint64_t board){
     for (int i=63; i >= 0; i--){
@@ -161,59 +181,27 @@ bool Board::loneBit(uint64_t piece){
 
 
 void Board::debug(){
-    uint64_t piece = 0x0000000800000000;
+    uint64_t piece = 0x0000000200000000;
     uint64_t all_pieces = 0xFF818181818181FF | piece;
-    uint64_t other_pieces = piece;
+    uint64_t other_pieces = 0;
     int piece_position = leastSignificant(piece);
 
-    cout << "Piece:\n";
-    display_bitboard(piece);
-    cout << '\n';
 
+    
     cout << "All pieces:\n";
     display_bitboard(all_pieces);
-    cout << '\n';
+
+    cout << "Other pieces:\n";
+    display_bitboard(other_pieces);
+    
+    cout << "Horizontal:\n";
+    display_bitboard(horizontalMoves(piece_position, all_pieces, other_pieces));
+    
 
 
-    cout << "N\n";
-    uint64_t piece_n_moves = directionalMoves(piece_position, NORTH, all_pieces, other_pieces);
-    display_bitboard(piece_n_moves);
-    cout << '\n';
+    cout << "Diagonal:\n";
+    display_bitboard(diagonalMoves(piece_position, all_pieces, other_pieces));
 
-    cout << "NE\n";
-    uint64_t piece_ne_moves = directionalMoves(piece_position, NORTHEAST, all_pieces, other_pieces);
-    display_bitboard(piece_ne_moves);
-    cout << '\n';
-
-    cout << "E\n";
-    uint64_t piece_e_moves = directionalMoves(piece_position, EAST, all_pieces, other_pieces);
-    display_bitboard(piece_e_moves);
-    cout << '\n';
-
-    cout << "SE\n";
-    uint64_t piece_se_moves = directionalMoves(piece_position, SOUTHEAST, all_pieces, other_pieces);
-    display_bitboard(piece_se_moves);
-    cout << '\n';
-
-    cout << "S\n";
-    uint64_t piece_s_moves = directionalMoves(piece_position, SOUTH, all_pieces, other_pieces);
-    display_bitboard(piece_s_moves);
-    cout << '\n';
-
-    cout << "SW\n";
-    uint64_t piece_sw_moves = directionalMoves(piece_position, SOUTHWEST, all_pieces, other_pieces);
-    display_bitboard(piece_sw_moves);
-    cout << '\n';
-
-    cout << "W\n";
-    uint64_t piece_w_moves = directionalMoves(piece_position, WEST, all_pieces, other_pieces);
-    display_bitboard(piece_w_moves);
-    cout << '\n';
-
-    cout << "NW\n";
-    uint64_t piece_nw_moves = directionalMoves(piece_position, NORTHWEST, all_pieces, other_pieces);
-    display_bitboard(piece_nw_moves);
-    cout << '\n';
     
 }
 

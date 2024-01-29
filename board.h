@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string>
@@ -110,6 +111,8 @@ class Board{
     int leastSignificant(uint64_t piece);
     int mostSignificant(uint64_t piece);
     uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
+    uint64_t horizontalMoves(int position, uint64_t all_piees, uint64_t other_pieces);
+    uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);
     
     
 
