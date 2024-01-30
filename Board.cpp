@@ -1,6 +1,7 @@
 #include "board.h"
 #include <cstdint>
 #include <iostream>
+#include <ctype.h> 
 
 
 int Board::turn(){
@@ -90,10 +91,23 @@ Moves Board::getMoves(){
     uint64_t all_pieces = white_pieces | black_pieces;
     uint64_t same_pieces = white_pieces;
     uint64_t other_pieces = black_pieces;
+    int side_index_adder = 0;
     if (half_turn % 2 == 1){
         same_pieces = black_pieces;
         other_pieces = white_pieces;
+        side_index_adder = 6;
     }
+
+
+
+
+    int queen_position = rays.leastSignificant(pieces[QUEEN + side_index_adder]);
+    uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) | diagonalMoves(queen_position, all_pieces, other_pieces);
+
+    moves.processMoveBoard(queen_move_board, other_pieces, queen_position, QUEEN, rays);
+
+
+
 
 
     return moves;
@@ -109,6 +123,78 @@ void Board::display_bitboard(uint64_t board){
 
         if (i % 8 == 0)
             cout << "\n";
+    }
+}
+
+
+void Board::initializeFromFen(string fen){
+    map<char, int> piece_map;
+    piece_map['K'] = KING;
+    piece_map['Q'] = QUEEN;
+    piece_map['R'] = ROOK;
+    piece_map['B'] = BISHOP;
+    piece_map['N'] = KNIGHT;
+    piece_map['P'] = PAWN;
+
+    piece_map['k'] = KING + 6;
+    piece_map['q'] = QUEEN + 6;
+    piece_map['r'] = ROOK + 6;
+    piece_map['b'] = BISHOP + 6;
+    piece_map['n'] = KNIGHT + 6;
+    piece_map['p'] = PAWN + 6;
+
+
+    int index = 63;
+    int i=0;
+    char c = fen.at(0);
+    while (c != ' '){
+        if (isdigit(c)){
+            index -= c - '0';
+        } else if (piece_map.count(c)){
+            pieces[piece_map[c]] |= 1ULL << index;
+            index--;
+        } 
+
+        i++;
+        c = fen.at(i);
+    }
+}
+
+
+void Board::printBoard(){
+    map<int, char> piece_map;
+    piece_map[KING] = 'K';
+    piece_map[QUEEN] = 'Q';
+    piece_map[ROOK] = 'R';
+    piece_map[BISHOP] = 'B';
+    piece_map[KNIGHT] = 'N';
+    piece_map[PAWN] = 'P';
+    piece_map[KING + 6] = 'k';
+    piece_map[QUEEN + 6] = 'q';
+    piece_map[ROOK + 6] = 'r';
+    piece_map[BISHOP + 6] = 'b';
+    piece_map[KNIGHT + 6] = 'n';
+    piece_map[PAWN + 6] = 'p';
+
+    for (int i=63; i >= 0; i--){
+        uint64_t piece_at_index = 1ULL << i;
+        bool found_piece = false;
+        for (int j=0; j < 12; j++){
+            if (pieces[j] & piece_at_index){
+                found_piece = true;
+                cout << piece_map[j] << " ";
+            }
+        }
+
+        if (!found_piece) {
+            cout << "0 ";
+        }
+
+        if (i % 8 == 0){
+            cout << "\n";
+        }
+
+        //cout << "i: " << i << "\n";
     }
 }
 
@@ -144,9 +230,14 @@ void Board::debug(){
 
 }
 
+
 int main(){
     Board board;
-    board.debug();
+    //board.debug();
+    board.initializeFromFen("R2r4/2B3b1/1p3k1p/7p/3P4/2N3K1/p2Q2Pp/1B6 w - - 0 1");
+    board.printBoard();
+    Moves board_moves = board.getMoves();
+    board_moves.displayMoves();
 
     
 }

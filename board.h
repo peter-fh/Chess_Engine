@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <map>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string>
@@ -123,7 +124,14 @@ class Board{
 
     public:
         void display_bitboard(uint64_t board);
+        void initializeFromFen(string fen);
         Board() {
+            rays.initializeBitPositions();
+            rays.loadRays();
+        }
+        Board(string fen){
+            initializeFromFen(fen);
+            
             rays.initializeBitPositions();
             rays.loadRays();
         }
@@ -137,6 +145,7 @@ class Board{
         void pop();
         string fen();
         void debug();
+        void printBoard();
     
 
 
