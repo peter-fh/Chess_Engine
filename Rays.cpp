@@ -2,7 +2,7 @@
 #include <cstdint>
 
 
-void Rays::loadRays(){
+void Bithack::loadRays(){
     uint64_t load_horizontal[8] =  {
                                     0x00000000000000ff,
                                     0x000000000000ff00,
@@ -75,28 +75,28 @@ void Rays::loadRays(){
 }
 
 
-uint64_t Rays::getHorizontal(int position){
+uint64_t Bithack::getHorizontal(int position){
     return horizontal[position / 8];
 }
 
-uint64_t Rays::getVertical(int position){
+uint64_t Bithack::getVertical(int position){
     return vertical[position % 8];
 }
 
-uint64_t Rays::getDiagonal(int position){
+uint64_t Bithack::getDiagonal(int position){
     int x = position % 8;
     int y = position / 8;
     return diagonal[7-x+y];
 }
 
-uint64_t Rays::getCounterDiagonal(int position){
+uint64_t Bithack::getCounterDiagonal(int position){
     int x = position % 8;
     int y = position / 8;
     return counter_diagonal[x+y];
 }
 
 
-uint64_t Rays::directionalMask(int position, int direction){
+uint64_t Bithack::directionalMask(int position, int direction){
     if (direction == POSITIVE){
         uint64_t mask = 0;
         mask = ~mask;
@@ -104,7 +104,8 @@ uint64_t Rays::directionalMask(int position, int direction){
         mask <<= position;
         return mask;
     }
-
+    if (position == 63)
+        return ~0ULL;
     uint64_t mask = 0;
     mask = ~mask;
     mask >>= position + 1;
@@ -114,7 +115,7 @@ uint64_t Rays::directionalMask(int position, int direction){
 }
 
 
-uint64_t Rays::castRay(int position, int direction){
+uint64_t Bithack::castRay(int position, int direction){
 
     if (direction == NORTH){
         return getVertical(position) & directionalMask(position, POSITIVE);
@@ -151,7 +152,7 @@ uint64_t Rays::castRay(int position, int direction){
 }
 
 
-int Rays::slowLeastSignificant (int num){
+int Bithack::slowLeastSignificant (int num){
     for (int i=0; i < 16; i++){
         if ((1ULL << i) & num)
             return i;
@@ -161,7 +162,7 @@ int Rays::slowLeastSignificant (int num){
 }
 
 
-int Rays::slowMostSignificant (int num){
+int Bithack::slowMostSignificant (int num){
     for (int i=15; i >= 0; i--){
         if ((1ULL << i) & num)
             return i;
@@ -172,7 +173,7 @@ int Rays::slowMostSignificant (int num){
 
 
 
-void Rays::initializeBitPositions(){
+void Bithack::initializeBitPositions(){
     for (int i=0; i < 0xffff; i++){
         least_significant_positions[i] = slowLeastSignificant(i);
         most_significant_positions[i] = slowMostSignificant(i);
@@ -187,7 +188,7 @@ const uint64_t SECOND_MOST_16 =     0x0000FFFF00000000;
 const uint64_t MOST_16 =            0xFFFF000000000000;
 
 
-int Rays::leastSignificant(uint64_t piece){
+int Bithack::leastSignificant(uint64_t piece){
 
     if (LEAST_16 & piece){
         piece &= LEAST_16;
@@ -214,7 +215,7 @@ int Rays::leastSignificant(uint64_t piece){
 }
 
 
-int Rays::mostSignificant(uint64_t piece){
+int Bithack::mostSignificant(uint64_t piece){
 
     if (MOST_16 & piece){
         return most_significant_positions[piece >> 48]+48;

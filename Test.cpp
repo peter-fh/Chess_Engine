@@ -1,9 +1,15 @@
 #include <iostream>
-#include <bitset>
+#include "testing.h"
 using namespace std;
 
-int main(){
-    uint16_t num = 0b1111;
-    cout << bitset<4>(num & (-num));
+Bithack bithack;
+void FuckThis::killMyself(){
+    cout << bithack.leastSignificant(0b001000);
+}
 
+
+int main(){
+    FuckThis fuckThis;
+    fuckThis.killMyself();
+    
 }

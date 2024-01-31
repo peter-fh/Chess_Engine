@@ -3,8 +3,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string>
+#include "bithack.h"
+
 using namespace std;
 
+
+extern Bithack bithack;
 
 
 const int POSITIVE = 1;
@@ -22,30 +26,7 @@ const int SOUTHWEST = -7;
 
 
 
-class Rays{
-    uint64_t horizontal[8];
-    uint64_t vertical[8];
-    uint64_t diagonal[15];
-    uint64_t counter_diagonal[15];
-    uint64_t least_significant_positions[65536];
-    uint64_t most_significant_positions[65536];
-    
-    int slowLeastSignificant(int piece);
-    int slowMostSignificant(int piece);
 
-
-    public:
-        void initializeBitPositions();
-        void loadRays();
-        uint64_t getHorizontal(int position);
-        uint64_t getVertical(int position);
-        uint64_t getDiagonal(int position);
-        uint64_t getCounterDiagonal(int position);
-        uint64_t directionalMask(int position, int direction);
-        uint64_t castRay(int position, int direction);
-        int leastSignificant(uint64_t piece);
-        int mostSignificant(uint64_t piece);
-};
 
 
 const int FROM = 0;
@@ -73,7 +54,7 @@ class Move{
 
 
 class Moves{
-    Move moves[120];
+    Move moves[150];
     int index;
     int len;
 
@@ -90,7 +71,7 @@ class Moves{
         void setLast();
         int length();
         void displayMoves();
-        void processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type, Rays rays);
+        void processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
         
 
 };
@@ -111,9 +92,6 @@ class Board{
     int phantom_pawn;
     int half_turn;
     Move previous_move;
-
-    // Utility
-    Rays rays;
     
 
 
@@ -125,17 +103,14 @@ class Board{
     public:
         void display_bitboard(uint64_t board);
         void initializeFromFen(string fen);
-        Board() {
-            rays.initializeBitPositions();
-            rays.loadRays();
+        Board(){
         }
         Board(string fen){
             initializeFromFen(fen);
-            
-            rays.initializeBitPositions();
-            rays.loadRays();
+
         }
-        bool loneBit(uint64_t piece);
+        uint64_t getKnightMoves(int position, uint64_t same_pieces);
+        bool lonePiece(uint64_t piece);
         Moves legal_moves;
         int turn();
         bool isLegal(Move move);
@@ -146,6 +121,7 @@ class Board{
         string fen();
         void debug();
         void printBoard();
+        uint64_t getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces);
     
 
 

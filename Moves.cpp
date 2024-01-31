@@ -74,10 +74,11 @@ void Moves::displayMoves(){
 }
 
 
-void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type, Rays rays){
+void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
+    
     while (move_board){
         Move move;
-        int move_square = rays.leastSignificant(move_board);
+        int move_square = bithack.leastSignificant(move_board);
         uint64_t move_piece = 1ULL << move_square;
         move.squares[0] = piece_position;
         move.squares[1] = move_square;
@@ -86,6 +87,8 @@ void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int pie
         setMove(move);
 
         move_board ^= move_piece;
+
    }
+   
 }
 
