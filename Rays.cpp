@@ -236,3 +236,8 @@ int Bithack::mostSignificant(uint64_t piece){
     return -1;
     
 }
+
+
+void debug(){
+
+}

@@ -18,20 +18,20 @@ class Bithack{
     int slowMostSignificant(int piece);
 
 
-    public:
-        Bithack(){
-            initializeBitPositions();
-            loadRays();
-        }
-        void initializeBitPositions();
-        void loadRays();
-        uint64_t getHorizontal(int position);
-        uint64_t getVertical(int position);
-        uint64_t getDiagonal(int position);
-        uint64_t getCounterDiagonal(int position);
-        uint64_t directionalMask(int position, int direction);
-        uint64_t castRay(int position, int direction);
-        int leastSignificant(uint64_t piece);
-        int mostSignificant(uint64_t piece);
+public:
+    Bithack(){
+        initializeBitPositions();
+        loadRays();
+    }
+    void initializeBitPositions();
+    void loadRays();
+    uint64_t getHorizontal(int position);
+    uint64_t getVertical(int position);
+    uint64_t getDiagonal(int position);
+    uint64_t getCounterDiagonal(int position);
+    uint64_t directionalMask(int position, int direction);
+    uint64_t castRay(int position, int direction);
+    int leastSignificant(uint64_t piece);
+    int mostSignificant(uint64_t piece);
 };
 

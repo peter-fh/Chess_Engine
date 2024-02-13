@@ -14,7 +14,7 @@ int Board::turn(){
 bool Board::lonePiece(uint64_t piece){
     if (piece ^ (piece & -piece))
         return false;
-
+    
     return true;
 }
 
@@ -28,6 +28,7 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
 
     int collision_position;
     uint64_t collisions = directional_ray & (all_pieces ^ piece);
+
 
 
     if (!collisions){  
@@ -82,6 +83,8 @@ uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other
 
 
 uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
+    if (position < 0)
+	return 0ULL;
     int x = position % 8;
     int y = position / 8;
     uint64_t king_moves_mask = 0;
@@ -101,14 +104,15 @@ uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_p
                         | bithack.getHorizontal(position)
                         | bithack.getVertical(position);
 
-
     return king_position_mask & king_moves_mask;
 
     
 }
 
 
-uint64_t Board::getKnightMoves(int position, uint64_t same_pieces){
+uint64_t Board::getKnightMoves(int position, uint64_t same_pieces, uint64_t other_pieces){
+    if (position < 0)
+	return 0ULL;
     uint64_t knight = 1ULL << position;
     uint64_t knight_move_board = 0ULL;
     //+15 (up right)
@@ -142,11 +146,40 @@ uint64_t Board::getKnightMoves(int position, uint64_t same_pieces){
                      | bithack.getVertical(6) 
                      | bithack.getVertical(7))) >> 6;
     // +10
-    knight_move_board|= (knight & ~(bithack.getHorizontal(7) | bithack.getVertical(6) | bithack.getVertical(7))) << 10;
+    knight_move_board|= (knight & ~(
+			bithack.getHorizontal(7) 
+		     | bithack.getVertical(6) 
+		     | bithack.getVertical(7))) << 10;
     // +17
-    knight_move_board |= (knight & ~(bithack.getHorizontal(7) | bithack.getHorizontal(6) | bithack.getVertical(7))) << 17;
+    knight_move_board |= (knight & ~(
+			 bithack.getHorizontal(7) 
+		      | bithack.getHorizontal(6) 
+		      | bithack.getVertical(7))) << 17;
 
     return knight_move_board & ~same_pieces;
+}
+
+
+
+void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*pieceMovesFuncPlsWork)(int, uint64_t, uint64_t), int piece_type){
+    if (!piece){
+        return;
+    }
+    if (lonePiece(piece)){
+	int piece_position = bithack.leastSignificant(piece);
+	uint64_t piece_moves = (this->*pieceMovesFuncPlsWork)(piece_position, all_pieces, other_pieces);
+	moves->processMoveBoard(piece_moves, other_pieces, piece_position, piece_type);
+	return;
+    }
+
+    int piece1 = bithack.leastSignificant(piece);
+    int piece2 = bithack.mostSignificant(piece);
+    uint64_t piece1_move_board = straightMoves(piece1, all_pieces, other_pieces);
+    uint64_t piece2_move_board = straightMoves(piece2, all_pieces, other_pieces);
+    moves->processMoveBoard(piece1_move_board, other_pieces, piece1, piece_type);
+    moves->processMoveBoard(piece2_move_board, other_pieces, piece2, piece_type);
+ 
+ 
 }
 
 
@@ -181,51 +214,17 @@ Moves Board::getMoves(){
     uint64_t king_move_board = getKingMoves(king_position, all_pieces, other_pieces);
     moves.processMoveBoard(king_move_board, other_pieces, king_position, KING);
 
-
     uint64_t rooks = pieces[ROOK + side_index_adder];
-    if (lonePiece(rooks)){
-        int rook_position = bithack.leastSignificant(rooks);
-        uint64_t rook_move_board = straightMoves(rook_position, all_pieces, other_pieces);
-        moves.processMoveBoard(rook_move_board, other_pieces, rook_position, ROOK);
-    } else if (rooks){
-        int rook1 = bithack.leastSignificant(rooks);
-        int rook2 = bithack.mostSignificant(rooks);
-        uint64_t rook1_move_board = straightMoves(rook1, all_pieces, other_pieces);
-        uint64_t rook2_move_board = straightMoves(rook2, all_pieces, other_pieces);
-        moves.processMoveBoard(rook1_move_board, other_pieces, rook1, ROOK);
-        moves.processMoveBoard(rook2_move_board, other_pieces, rook2, ROOK);
-    }
-    
-    
-    uint64_t bishops = pieces[BISHOP + side_index_adder];
-    if (lonePiece(bishops)){
-        int bishop_position = bithack.leastSignificant(bishops);
-        uint64_t bishop_move_board = diagonalMoves(bishop_position, all_pieces, other_pieces);
-        moves.processMoveBoard(bishop_move_board, other_pieces, bishop_position, BISHOP);
-    } else if (bishops){
-        int bishop1 = bithack.leastSignificant(bishops);
-        int bishop2 = bithack.mostSignificant(bishops);
-        uint64_t bishop1_move_board = diagonalMoves(bishop1, all_pieces, other_pieces);
-        uint64_t bishop2_move_board = diagonalMoves(bishop2, all_pieces, other_pieces);
-        moves.processMoveBoard(bishop1_move_board, other_pieces, bishop1, BISHOP);
-        moves.processMoveBoard(bishop2_move_board, other_pieces, bishop2, BISHOP);
-    }
-    
+    processDoublePieceMoves(rooks, all_pieces, other_pieces, &moves, &Board::straightMoves, ROOK);    
+   
+
+    uint64_t bishops = pieces[BISHOP + side_index_adder]; 
+    processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
  
-    uint64_t knights = pieces[KNIGHT + side_index_adder];
-    if (lonePiece(knights)){
-        int knight_position = bithack.leastSignificant(knights);
-        uint64_t knight_move_board = getKnightMoves(knight_position, same_pieces);
-        moves.processMoveBoard(knight_move_board, other_pieces, knight_position, KNIGHT);
-    } else if (knights){
-        int knight1= bithack.leastSignificant(knights);
-        int knight2 = bithack.mostSignificant(knights);
-        uint64_t knight1_move_board = getKnightMoves(knight1, same_pieces);
-        uint64_t knight2_move_board = getKnightMoves(knight2, same_pieces);
-        moves.processMoveBoard(knight1_move_board, other_pieces, knight1, KNIGHT);
-        moves.processMoveBoard(knight2_move_board, other_pieces, knight2, KNIGHT);
-    }
-    
+    uint64_t knights = pieces[KNIGHT + side_index_adder]; 
+    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::getKnightMoves, KNIGHT);    
+
+    uint64_t pawns = pieces[PAWN + side_index_adder];
     
     return moves;
 }
@@ -245,6 +244,9 @@ void Board::display_bitboard(uint64_t board){
 
 
 void Board::initializeFromFen(string fen){
+    for (int i=0; i < 12; i++){
+        pieces[i] = 0ULL;
+    }
     map<char, int> piece_map;
     piece_map['K'] = KING;
     piece_map['Q'] = QUEEN;
@@ -274,11 +276,18 @@ void Board::initializeFromFen(string fen){
 
         i++;
         c = fen.at(i);
+    
     }
+    
+    i++;
+    char half_move = c;
+
+    
 }
 
 
 void Board::printBoard(){
+
     map<int, char> piece_map;
     piece_map[KING] = 'K';
     piece_map[QUEEN] = 'Q';
@@ -318,8 +327,6 @@ void Board::printBoard(){
 
 void Board::debug(){
     uint64_t piece = 0x8000000000000000;
-    
-
 
 }
 
@@ -328,11 +335,9 @@ int main(){
     Board board;
     
     //board.debug();
-    board.initializeFromFen("R2r4/2B3b1/1p3k1p/7p/3P4/2N3K1/p2Q2Pp/1B6 w - - 0 1");
+    board.initializeFromFen("8/8/8/8/2R5/8/8/8 w HAha - 0 1");
     board.printBoard();
-    //cout << "???\n";
     Moves board_moves = board.getMoves();
     board_moves.displayMoves();
-
     
 }
