@@ -1,9 +1,8 @@
-#include "board.h"
 #include <cstdint>
 #include <iostream>
 #include <ctype.h> 
+#include "board.h"
 
-Bithack bithack;
 
 int Board::turn(){
     return half_turn;
@@ -14,7 +13,7 @@ int Board::turn(){
 bool Board::lonePiece(uint64_t piece){
     if (piece ^ (piece & -piece))
         return false;
-    
+        
     return true;
 }
 
@@ -70,6 +69,26 @@ uint64_t Board::straightMoves(int position, uint64_t all_pieces, uint64_t other_
 }
 
 
+void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
+     
+    while (move_board){
+        Move move;
+        int move_square = bithack.leastSignificant(move_board);
+        uint64_t move_piece = 1ULL << move_square;
+        move.squares[0] = piece_position;
+        move.squares[1] = move_square;
+        move.type = piece_type;
+        move.take = move_piece & other_pieces;
+        moves->setMove(move);
+
+        move_board ^= move_piece;
+
+   }
+   
+    
+}
+
+
 uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
     uint64_t move_board = 0ULL;
 
@@ -81,6 +100,8 @@ uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other
     return move_board;
 }
 
+
+        
 
 uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
     if (position < 0)
@@ -160,25 +181,109 @@ uint64_t Board::getKnightMoves(int position, uint64_t same_pieces, uint64_t othe
 }
 
 
-
-void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*pieceMovesFuncPlsWork)(int, uint64_t, uint64_t), int piece_type){
+void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*pieceMoves)(int, uint64_t, uint64_t), int piece_type){
     if (!piece){
         return;
     }
     if (lonePiece(piece)){
 	int piece_position = bithack.leastSignificant(piece);
-	uint64_t piece_moves = (this->*pieceMovesFuncPlsWork)(piece_position, all_pieces, other_pieces);
-	moves->processMoveBoard(piece_moves, other_pieces, piece_position, piece_type);
+	uint64_t piece_moves = (this->*pieceMoves)(piece_position, all_pieces, other_pieces);
+	processMoveBoard(moves, piece_moves, other_pieces, piece_position, piece_type);
 	return;
     }
 
-    int piece1 = bithack.leastSignificant(piece);
-    int piece2 = bithack.mostSignificant(piece);
-    uint64_t piece1_move_board = straightMoves(piece1, all_pieces, other_pieces);
-    uint64_t piece2_move_board = straightMoves(piece2, all_pieces, other_pieces);
-    moves->processMoveBoard(piece1_move_board, other_pieces, piece1, piece_type);
-    moves->processMoveBoard(piece2_move_board, other_pieces, piece2, piece_type);
+    int piece1 = bithack.leastSignificant(piece); 
+    int piece2 = bithack.mostSignificant(piece); 
+    uint64_t piece1_move_board = (this->*pieceMoves)(piece1, all_pieces, other_pieces); 
+    uint64_t piece2_move_board = (this->*pieceMoves)(piece2, all_pieces, other_pieces); 
+    processMoveBoard(moves, piece1_move_board, other_pieces, piece1, piece_type);
+    processMoveBoard(moves, piece2_move_board, other_pieces, piece2, piece_type);
  
+ 
+}
+
+
+const int WHITE = 0;
+const int BLACK = 1;
+
+const uint64_t FORWARD_PAWN_MASK = 		0x00FFFFFFFFFFFF00;
+const uint64_t MOST_SIGNIFICANT_PAWN_MASK = 	0x00CCCCCCCCCCCC00;
+const uint64_t LEAST_SIGNIFICANT_PAWN_MASK = 	0x0033333333333300;
+const uint64_t SECOND_ROW_PAWN_MASK = 		0x000000000000FF00;
+const uint64_t SEVENTH_ROW_PAWN_MASK = 		0x00FF000000000000;
+
+
+void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+    // mb = move board, can't be bothered to write it out
+    uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) << 8) & (~all_pieces); 
+    uint64_t double_forward_mb = ((pawns & SECOND_ROW_PAWN_MASK) << 16) & (~all_pieces); 
+    uint64_t promotion_mb = ((pawns & SEVENTH_ROW_PAWN_MASK) << 8) & (~all_pieces);
+
+    uint64_t most_significant_take_mb = 0ULL;
+    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7)) << 9;
+    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK) << 7;
+    most_significant_take_mb &= other_pieces;
+
+    uint64_t least_significant_take_mb = 0ULL;
+    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK) << 9;
+    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) << 7;
+    least_significant_take_mb &= other_pieces;
+    
+    
+    while (forward_mb) {
+	int pawn_position = bithack.leastSignificant(forward_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = pawn_position - 8;
+	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	moves->setMove(pawn_move);
+	forward_mb &= ~pawn;
+    }
+
+ 
+    while (double_forward_mb) {
+	int pawn_position = bithack.leastSignificant(double_forward_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = pawn_position - 16;
+	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	moves->setMove(pawn_move);
+	double_forward_mb &= ~pawn;
+    }
+    
+    // 7 6 5 4 3 2 1 0 
+    // L R R L L R R L
+    // 1 1 1 1 1 1 1 1 
+    // 1 1 0 0 1 1 0 0
+    
+    while (most_significant_take_mb){
+	int pawn_position = bithack.leastSignificant(most_significant_take_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = -1;
+	if (((pawn_position + 1) / 2) % 2 == 0)
+	    from = pawn_position - 9;
+	else 
+	    from = pawn_position - 7;
+	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	moves->setMove(pawn_move);
+	most_significant_take_mb &= ~pawn;
+    }
+
+    // 7 6 5 4 3 2 1 0 
+    // / L L R R L L R
+    // 1 1 1 1 1 1 1 1 
+    // 0 0 1 1 0 0 1 1
+
+    while (least_significant_take_mb){
+	int pawn_position = bithack.leastSignificant(least_significant_take_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = -1;
+	if (((pawn_position + 1) / 2) % 2 == 0)
+	    from = pawn_position - 7;
+	else 
+	    from = pawn_position - 9;
+	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	moves->setMove(pawn_move);
+	least_significant_take_mb &= ~pawn;
+    }
  
 }
 
@@ -194,25 +299,35 @@ Moves Board::getMoves(){
         black_pieces |= pieces[i+6];
     }
 
+
+    uint64_t same_pieces;
+    uint64_t other_pieces;
+    int side_index_adder;
+    int side;
     uint64_t all_pieces = white_pieces | black_pieces;
-    uint64_t same_pieces = white_pieces;
-    uint64_t other_pieces = black_pieces;
-    int side_index_adder = 0;
-    if (half_turn % 2 == 1){
+
+    if (half_turn % 2 == 0) {
+	same_pieces = white_pieces;
+	other_pieces = black_pieces;
+	side_index_adder = 0;
+	side = WHITE;
+    }
+    else {
         same_pieces = black_pieces;
         other_pieces = white_pieces;
         side_index_adder = 6;
+	side = BLACK;
     }
 
 
     int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
     uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
                                 | diagonalMoves(queen_position, all_pieces, other_pieces);
-    moves.processMoveBoard(queen_move_board, other_pieces, queen_position, QUEEN);
+    processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
 
     int king_position = bithack.leastSignificant(pieces[KING + side_index_adder]);
     uint64_t king_move_board = getKingMoves(king_position, all_pieces, other_pieces);
-    moves.processMoveBoard(king_move_board, other_pieces, king_position, KING);
+    processMoveBoard(&moves, king_move_board, other_pieces, king_position, KING);
 
     uint64_t rooks = pieces[ROOK + side_index_adder];
     processDoublePieceMoves(rooks, all_pieces, other_pieces, &moves, &Board::straightMoves, ROOK);    
@@ -225,7 +340,9 @@ Moves Board::getMoves(){
     processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::getKnightMoves, KNIGHT);    
 
     uint64_t pawns = pieces[PAWN + side_index_adder];
-    
+    if (side == WHITE)
+	whitePawnMoves(pawns, all_pieces, other_pieces, &moves);
+
     return moves;
 }
 
@@ -330,12 +447,11 @@ void Board::debug(){
 
 }
 
-
 int main(){
     Board board;
     
     //board.debug();
-    board.initializeFromFen("8/8/8/8/2R5/8/8/8 w HAha - 0 1");
+    board.initializeFromFen("7K/8/8/8/2r5/1P1P4/8/7k b - - 0 1");
     board.printBoard();
     Moves board_moves = board.getMoves();
     board_moves.displayMoves();

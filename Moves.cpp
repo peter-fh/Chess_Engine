@@ -71,24 +71,7 @@ void Moves::displayMoves(){
         next();
         cout << getMove().moveCode() << " ";
     }
-}
 
-
-void Moves::processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
-    
-    while (move_board){
-        Move move;
-        int move_square = bithack.leastSignificant(move_board);
-        uint64_t move_piece = 1ULL << move_square;
-        move.squares[0] = piece_position;
-        move.squares[1] = move_square;
-        move.type = piece_type;
-        move.take = move_piece & other_pieces;
-        setMove(move);
-
-        move_board ^= move_piece;
-
-   }
-   
+    seek(0);
 }
 

@@ -8,7 +8,6 @@
 using namespace std;
 
 
-extern Bithack bithack;
 
 
 const int POSITIVE = 1;
@@ -70,9 +69,7 @@ class Moves{
         void setMove(Move move);
         void setLast();
         int length();
-        void displayMoves();
-        void processMoveBoard(uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
-        
+        void displayMoves();        
 
 };
 
@@ -94,37 +91,41 @@ class Board{
     int phantom_pawn;
     int half_turn;
     Move previous_move;
+    Bithack bithack; 
+
     
-
-
     uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
     uint64_t straightMoves(int position, uint64_t all_piees, uint64_t other_pieces);
     uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);    
+
+    void whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
     void processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*getPieceMoves) (int, uint64_t, uint64_t), int piece_type);    
 
-    public:
-        void display_bitboard(uint64_t board);
-        void initializeFromFen(string fen);
-        Board(){
-        }
-        Board(string fen){
-            initializeFromFen(fen);
+    void processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
 
-        }
-        uint64_t getKnightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
-        bool lonePiece(uint64_t piece);
-        Moves legal_moves;
-        int turn();
-        bool isLegal(Move move);
-        Moves getMoves();
-        void makeMove(Move move);
-        void push();
-        void pop();
-        string fen();
-        void debug();
-        void printBoard();
-        uint64_t getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces);
-    
+public:
+    void display_bitboard(uint64_t board);
+    void initializeFromFen(string fen);
+    Board(){
+    }
+    Board(string fen){
+	initializeFromFen(fen);
+
+    }
+    uint64_t getKnightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
+    bool lonePiece(uint64_t piece);
+    Moves legal_moves;
+    int turn();
+    bool isLegal(Move move);
+    Moves getMoves();
+    void makeMove(Move move);
+    void push();
+    void pop();
+    string fen();
+    void debug();
+    void printBoard();
+    uint64_t getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces);
+	
 
 
 };
