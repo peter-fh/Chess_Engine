@@ -25,7 +25,12 @@ const int SOUTHWEST = -7;
 
 
 
-
+const int KING = 0;
+const int QUEEN = 1;
+const int ROOK = 2;
+const int BISHOP = 3;
+const int KNIGHT = 4;
+const int PAWN = 5;
 
 
 const int FROM = 0;
@@ -74,13 +79,6 @@ class Moves{
 };
 
 
-const int KING = 0;
-const int QUEEN = 1;
-const int ROOK = 2;
-const int BISHOP = 3;
-const int KNIGHT = 4;
-const int PAWN = 5;
-
 
 
 class Board{
@@ -99,6 +97,8 @@ class Board{
     uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);    
 
     void whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
+
+    void blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
     void processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*getPieceMoves) (int, uint64_t, uint64_t), int piece_type);    
 
     void processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
@@ -112,7 +112,7 @@ public:
 	initializeFromFen(fen);
 
     }
-    uint64_t getKnightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
+    uint64_t knightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
     bool lonePiece(uint64_t piece);
     Moves legal_moves;
     int turn();

@@ -131,7 +131,7 @@ uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_p
 }
 
 
-uint64_t Board::getKnightMoves(int position, uint64_t same_pieces, uint64_t other_pieces){
+uint64_t Board::knightMoves(int position, uint64_t same_pieces, uint64_t other_pieces){
     if (position < 0)
 	return 0ULL;
     uint64_t knight = 1ULL << position;
@@ -288,6 +288,90 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 }
 
 
+void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+    // mb = move board, can't be bothered to write it out
+    
+    uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) >> 8) & (~all_pieces); 
+    uint64_t double_forward_mb = ((pawns & SECOND_ROW_PAWN_MASK) >> 16) & (~all_pieces); 
+    uint64_t promotion_mb = ((pawns & SEVENTH_ROW_PAWN_MASK) >> 8) & (~all_pieces);
+
+    // 11001100
+    uint64_t most_significant_take_mb = 0ULL;
+    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7))  >> 7;
+    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK) >> 9;
+    most_significant_take_mb &= other_pieces;
+
+    // 00110011
+    uint64_t least_significant_take_mb = 0ULL;
+    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK) >> 7;
+    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) >> 9;
+    least_significant_take_mb &= other_pieces;
+
+
+    while (forward_mb) {
+	int pawn_position = bithack.leastSignificant(forward_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = pawn_position + 8;
+	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	moves->setMove(pawn_move);
+	forward_mb &= ~pawn;
+    }
+
+
+     while (double_forward_mb) {
+	int pawn_position = bithack.leastSignificant(double_forward_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = pawn_position + 16;
+	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	moves->setMove(pawn_move);
+	double_forward_mb &= ~pawn;
+    }
+
+    // 7 6 5 4 3 2 1 0 
+    // R L L R R L L /
+    // 1 1 0 0 1 1 0 0
+    // 1 1 1 1 1 1 1 1 
+    // f(x):
+    // 0 1 1 0 0 1 1 0
+
+    
+    while (most_significant_take_mb){
+	int pawn_position = bithack.leastSignificant(most_significant_take_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = -1;
+	if (((pawn_position + 1) / 2) % 2 == 0)
+	    from = pawn_position + 7;
+	else 
+	    from = pawn_position + 9;
+	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	moves->setMove(pawn_move);
+	most_significant_take_mb &= ~pawn;
+    }
+
+    // 7 6 5 4 3 2 1 0 
+    // / R R L L R R L
+    // 0 0 1 1 0 0 1 1
+    // 1 1 1 1 1 1 1 1
+    // f(x):
+    // 0 1 1 0 0 1 1 0
+
+    while (least_significant_take_mb){
+	int pawn_position = bithack.leastSignificant(least_significant_take_mb);
+	uint64_t pawn = 1ULL << pawn_position;
+	int from = -1;
+	if (((pawn_position + 1) / 2) % 2 == 0)
+	    from = pawn_position + 9;
+	else 
+	    from = pawn_position + 7;
+	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	moves->setMove(pawn_move);
+	least_significant_take_mb &= ~pawn;
+    }
+ 
+}
+
+
+
 Moves Board::getMoves(){
     Moves moves;
     
@@ -337,11 +421,13 @@ Moves Board::getMoves(){
     processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
  
     uint64_t knights = pieces[KNIGHT + side_index_adder]; 
-    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::getKnightMoves, KNIGHT);    
+    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::knightMoves, KNIGHT);    
 
     uint64_t pawns = pieces[PAWN + side_index_adder];
     if (side == WHITE)
 	whitePawnMoves(pawns, all_pieces, other_pieces, &moves);
+    else 
+	blackPawnMoves(pawns, all_pieces, other_pieces, &moves);
 
     return moves;
 }
@@ -361,6 +447,7 @@ void Board::display_bitboard(uint64_t board){
 
 
 void Board::initializeFromFen(string fen){
+    cout << fen << "\n";
     for (int i=0; i < 12; i++){
         pieces[i] = 0ULL;
     }
@@ -393,11 +480,12 @@ void Board::initializeFromFen(string fen){
 
         i++;
         c = fen.at(i);
+	cout << c;
     
     }
-    
+    cout << "\n";
     i++;
-    char half_move = c;
+    c = fen.at(i);
 
     
 }
@@ -451,7 +539,7 @@ int main(){
     Board board;
     
     //board.debug();
-    board.initializeFromFen("7K/8/8/8/2r5/1P1P4/8/7k b - - 0 1");
+    board.initializeFromFen("7K/8/8/1p1p4/2r5/1P1P4/8/7k b - - 0 1");
     board.printBoard();
     Moves board_moves = board.getMoves();
     board_moves.displayMoves();
