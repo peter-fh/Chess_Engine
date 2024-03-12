@@ -1,6 +1,10 @@
 #include <cstdint>
 #include "Bithack.h"
 
+Bithack::Bithack(){
+    initializeBitPositions();
+    loadRays();
+    }
 
 void Bithack::loadRays(){
     uint64_t load_horizontal[8] =  {
