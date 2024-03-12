@@ -32,10 +32,7 @@ class Bithack{
 
 
 public:
-    Bithack(){
-        initializeBitPositions();
-        loadRays();
-    }
+    Bithack();
     void initializeBitPositions();
     void loadRays();
     uint64_t getHorizontal(int position);
