@@ -5,6 +5,19 @@
 #include <string>
 
 
+const int POSITIVE = 1;
+const int NEGATIVE = -1;
+
+// Bitshift left by this amount travels one square in this direction:
+const int WEST = 1;
+const int NORTHWEST = 9;
+const int NORTH = 8;
+const int NORTHEAST = 7;
+const int EAST = -1;
+const int SOUTHEAST = -9;
+const int SOUTH = -8;
+const int SOUTHWEST = -7;
+
 
 class Bithack{
     uint64_t horizontal[8];

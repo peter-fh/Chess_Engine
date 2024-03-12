@@ -1,7 +1,17 @@
 #include <cstdint>
 #include <iostream>
 #include <ctype.h> 
-#include "board.h"
+#include "Board.h"
+
+using std::cout;
+
+
+Board::Board(){}
+
+
+Board::Board(string fen){
+    initializeFromFen(fen);
+}
 
 
 int Board::turn(){
@@ -214,6 +224,8 @@ const uint64_t SEVENTH_ROW_PAWN_MASK = 		0x00FF000000000000;
 
 
 void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+    if (!pawns)
+	return;
     // mb = move board, can't be bothered to write it out
     uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) << 8) & (~all_pieces); 
     uint64_t double_forward_mb = ((pawns & SECOND_ROW_PAWN_MASK) << 16) & (~all_pieces); 
@@ -289,6 +301,8 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 
 
 void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+    if (!pawns)
+	return;
     // mb = move board, can't be bothered to write it out
     
     uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) >> 8) & (~all_pieces); 
@@ -404,11 +418,13 @@ Moves Board::getMoves(){
     }
 
 
-    int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
-    uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
-                                | diagonalMoves(queen_position, all_pieces, other_pieces);
-    processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
-
+    if (pieces[QUEEN + side_index_adder]) {
+	int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
+	uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
+				    | diagonalMoves(queen_position, all_pieces, other_pieces);
+	processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
+    }
+ 
     int king_position = bithack.leastSignificant(pieces[KING + side_index_adder]);
     uint64_t king_move_board = getKingMoves(king_position, all_pieces, other_pieces);
     processMoveBoard(&moves, king_move_board, other_pieces, king_position, KING);
@@ -451,7 +467,7 @@ void Board::initializeFromFen(string fen){
     for (int i=0; i < 12; i++){
         pieces[i] = 0ULL;
     }
-    map<char, int> piece_map;
+    std::map<char, int> piece_map;
     piece_map['K'] = KING;
     piece_map['Q'] = QUEEN;
     piece_map['R'] = ROOK;
@@ -493,7 +509,7 @@ void Board::initializeFromFen(string fen){
 
 void Board::printBoard(){
 
-    map<int, char> piece_map;
+    std::map<int, char> piece_map;
     piece_map[KING] = 'K';
     piece_map[QUEEN] = 'Q';
     piece_map[ROOK] = 'R';
@@ -539,7 +555,7 @@ int main(){
     Board board;
     
     //board.debug();
-    board.initializeFromFen("7K/8/8/1p1p4/2r5/1P1P4/8/7k b - - 0 1");
+    board.initializeFromFen("8/1q1q1q1q/P1P1P1P1/8/8/qqqq1q1q/1P1P1P1P/8 w - - 0 1");
     board.printBoard();
     Moves board_moves = board.getMoves();
     board_moves.displayMoves();

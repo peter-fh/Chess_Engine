@@ -1,5 +1,5 @@
-#include "board.h"
 #include <cstdint>
+#include "Bithack.h"
 
 
 void Bithack::loadRays(){

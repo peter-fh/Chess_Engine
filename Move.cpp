@@ -1,6 +1,17 @@
 #include <stdbool.h>
-#include "board.h"
+#include "Move.h"
 using namespace std;
+
+
+Move::Move(): type(-1) {}
+
+
+Move::Move(int from, int to, int inptype, bool inptake) {
+        squares[FROM] = from; 
+        squares[TO]= to;
+        type = inptype;
+        take = inptake;    
+    }
 
 
 string Move::moveCode(){

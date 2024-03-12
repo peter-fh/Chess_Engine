@@ -3,26 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string>
-#include "bithack.h"
-
-using namespace std;
-
-
-
-
-const int POSITIVE = 1;
-const int NEGATIVE = -1;
-
-// Bitshift left by this amount travels one square in this direction:
-const int WEST = 1;
-const int NORTHWEST = 9;
-const int NORTH = 8;
-const int NORTHEAST = 7;
-const int EAST = -1;
-const int SOUTHEAST = -9;
-const int SOUTH = -8;
-const int SOUTHWEST = -7;
-
+#include "Bithack.h"
+#include "Moves.h"
 
 
 const int KING = 0;
@@ -31,54 +13,6 @@ const int ROOK = 2;
 const int BISHOP = 3;
 const int KNIGHT = 4;
 const int PAWN = 5;
-
-
-const int FROM = 0;
-const int TO = 1;
-
-class Move{
-    public:
-        int squares[2];
-        int type;
-        bool take;
-
-    Move(): type(-1) {}
-
-    Move(int from, int to, int inptype, bool inptake) {
-        squares[FROM] = from; 
-        squares[TO]= to;
-        type = inptype;
-        take = inptake;    
-    }
-
-    string moveCode();
-    bool isNull();
-    bool equals(Move move);
-};
-
-
-class Moves{
-    Move moves[150];
-    int index;
-    int len;
-
-
-    public:
-
-        Moves(): index(0), len(0){} 
-        Move getMove();
-        void next();
-        bool seek(int seekIndex);
-        bool hasNext();
-        bool isNull();
-        void setMove(Move move);
-        void setLast();
-        int length();
-        void displayMoves();        
-
-};
-
-
 
 
 class Board{
@@ -106,12 +40,8 @@ class Board{
 public:
     void display_bitboard(uint64_t board);
     void initializeFromFen(string fen);
-    Board(){
-    }
-    Board(string fen){
-	initializeFromFen(fen);
-
-    }
+    Board();
+    Board(string fen);
     uint64_t knightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
     bool lonePiece(uint64_t piece);
     Moves legal_moves;
@@ -126,8 +56,6 @@ public:
     void printBoard();
     uint64_t getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces);
 	
-
-
 };
 
 

@@ -1,6 +1,8 @@
-#include "board.h"
+#include "Moves.h"
 #include <cstdint>
 #include <iostream>
+
+using std::cout;
 
 
 Move Moves::getMove(){
