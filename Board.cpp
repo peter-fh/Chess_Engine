@@ -2,11 +2,7 @@
 #include <iostream>
 #include <ctype.h> 
 #include "Board.h"
-
-using std::cout;
-
-
-Board::Board(){}
+#include <fstream>
 
 
 Board::Board(string fen){
@@ -14,10 +10,187 @@ Board::Board(string fen){
 }
 
 
+Moves Board::getMoves(){
+    Moves moves;
+    
+
+    uint64_t white_pieces = 0;
+    uint64_t black_pieces = 0; 
+    for (int i=0; i < 6; i++){
+        white_pieces |= pieces[i];
+        black_pieces |= pieces[i+6];
+    }
+
+
+    uint64_t same_pieces;
+    uint64_t other_pieces;
+    int side_index_adder;
+    int side;
+    uint64_t all_pieces = white_pieces | black_pieces;
+
+    if (half_turn % 2 == 0) {
+	same_pieces = white_pieces;
+	other_pieces = black_pieces;
+	side_index_adder = 0;
+	side = WHITE;
+    }
+    else {
+        same_pieces = black_pieces;
+        other_pieces = white_pieces;
+        side_index_adder = 6;
+	side = BLACK;
+    }
+
+
+    if (pieces[QUEEN + side_index_adder]) {
+	int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
+	uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
+				    | diagonalMoves(queen_position, all_pieces, other_pieces);
+	processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
+    }
+ 
+    int king_position = bithack.leastSignificant(pieces[KING + side_index_adder]);
+    uint64_t king_move_board = getKingMoves(king_position, same_pieces);
+    processMoveBoard(&moves, king_move_board, other_pieces, king_position, KING);
+
+    uint64_t rooks = pieces[ROOK + side_index_adder];
+    processDoublePieceMoves(rooks, all_pieces, other_pieces, &moves, &Board::straightMoves, ROOK);    
+   
+
+    uint64_t bishops = pieces[BISHOP + side_index_adder]; 
+    processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
+ 
+    uint64_t knights = pieces[KNIGHT + side_index_adder]; 
+    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::knightMoves, KNIGHT);    
+
+    uint64_t pawns = pieces[PAWN + side_index_adder];
+    if (side == WHITE)
+	whitePawnMoves(pawns, all_pieces, other_pieces, &moves);
+    else 
+	blackPawnMoves(pawns, all_pieces, other_pieces, &moves);
+    
+
+    moves.seek(0);
+    return moves;
+}
+
+
+void Board::makeMove(Move move){
+
+     
+    int side_index_adder = 0;
+    if (half_turn % 2 == BLACK){
+	side_index_adder = 6;
+    }
+    uint64_t from_board = 1ULL << move.squares[FROM];
+    uint64_t to_board = 1ULL << move.squares[TO];
+    pieces[move.type + side_index_adder] &= ~from_board;
+    pieces[move.type + side_index_adder] |= to_board;
+
+    if (move.take == true){
+	for (int i = (6 - side_index_adder); i < 12 - side_index_adder; i++){
+	    pieces[i] &= ~to_board;
+	}
+    }
+    half_turn++;
+
+
+}
+
+
+void Board::unmakeMove(Move move){
+
+
+    int side_index_adder = 0;
+    if ((half_turn-1) % 2 == BLACK){
+	side_index_adder = 6;
+    }
+    uint64_t from_board = 1ULL << move.squares[TO];
+    uint64_t to_board = 1ULL << move.squares[FROM];
+    pieces[move.type + side_index_adder] &= ~from_board;
+    pieces[move.type + side_index_adder] |= to_board;
+
+    if (move.take == true){
+	pieces[6-side_index_adder + previous_taken_piece] |= to_board;
+    }
+
+    half_turn--;
+
+}
+uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
+    uint64_t move_board = 0ULL;
+
+    move_board |= directionalMoves(position, NORTHEAST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, SOUTHEAST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, SOUTHWEST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, NORTHWEST, all_pieces, other_pieces);
+
+    return move_board;
+}
+
+
 int Board::turn(){
     return half_turn;
 }
 
+
+string Board::toString(){
+
+    string board_string = "";
+    std::map<int, char> piece_map;
+    piece_map[KING] = 'K';
+    piece_map[QUEEN] = 'Q';
+    piece_map[ROOK] = 'R';
+    piece_map[BISHOP] = 'B';
+    piece_map[KNIGHT] = 'N';
+    piece_map[PAWN] = 'P';
+    piece_map[KING + 6] = 'k';
+    piece_map[QUEEN + 6] = 'q';
+    piece_map[ROOK + 6] = 'r';
+    piece_map[BISHOP + 6] = 'b';
+    piece_map[KNIGHT + 6] = 'n';
+    piece_map[PAWN + 6] = 'p';
+
+    for (int i=63; i >= 0; i--){
+        uint64_t piece_at_index = 1ULL << i;
+        bool found_piece = false;
+        for (int j=0; j < 12; j++){
+            if (pieces[j] & piece_at_index){
+                found_piece = true;
+                board_string += piece_map[j] ;
+		board_string += " ";
+            }
+        }
+
+        if (!found_piece) {
+            board_string += "0 ";
+        }
+
+        if (i % 8 == 0){
+            board_string += "\n";
+        }
+
+        //cout << "i: " << i << "\n";
+    }
+
+    return board_string;
+}
+
+
+string Board::bitboardToString(uint64_t board){
+    string bitboard_string = "";
+    for (int i=63; i >= 0; i--){
+	if ((1ULL << i) & board)
+	    bitboard_string += "1 ";
+	else
+	    bitboard_string += "0 ";
+
+	if (i % 8 == 0)
+	    bitboard_string += "\n";
+    }
+
+    return bitboard_string;
+}
 
 
 bool Board::lonePiece(uint64_t piece){
@@ -99,21 +272,9 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
 }
 
 
-uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
-    uint64_t move_board = 0ULL;
-
-    move_board |= directionalMoves(position, NORTHEAST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, SOUTHEAST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, SOUTHWEST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, NORTHWEST, all_pieces, other_pieces);
-
-    return move_board;
-}
-
-
         
 
-uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
+uint64_t Board::getKingMoves(int position, uint64_t same_pieces){
     if (position < 0)
 	return 0ULL;
     int x = position % 8;
@@ -135,7 +296,7 @@ uint64_t Board::getKingMoves(int position, uint64_t all_pieces, uint64_t other_p
                         | bithack.getHorizontal(position)
                         | bithack.getVertical(position);
 
-    return king_position_mask & king_moves_mask;
+    return ~same_pieces & (king_position_mask & king_moves_mask);
 
     
 }
@@ -211,10 +372,6 @@ void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_
  
  
 }
-
-
-const int WHITE = 0;
-const int BLACK = 1;
 
 const uint64_t FORWARD_PAWN_MASK = 		0x00FFFFFFFFFFFF00;
 const uint64_t MOST_SIGNIFICANT_PAWN_MASK = 	0x00CCCCCCCCCCCC00;
@@ -386,84 +543,8 @@ void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 
 
 
-Moves Board::getMoves(){
-    Moves moves;
-    
-
-    uint64_t white_pieces = 0;
-    uint64_t black_pieces = 0; 
-    for (int i=0; i < 6; i++){
-        white_pieces |= pieces[i];
-        black_pieces |= pieces[i+6];
-    }
-
-
-    uint64_t same_pieces;
-    uint64_t other_pieces;
-    int side_index_adder;
-    int side;
-    uint64_t all_pieces = white_pieces | black_pieces;
-
-    if (half_turn % 2 == 0) {
-	same_pieces = white_pieces;
-	other_pieces = black_pieces;
-	side_index_adder = 0;
-	side = WHITE;
-    }
-    else {
-        same_pieces = black_pieces;
-        other_pieces = white_pieces;
-        side_index_adder = 6;
-	side = BLACK;
-    }
-
-
-    if (pieces[QUEEN + side_index_adder]) {
-	int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
-	uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
-				    | diagonalMoves(queen_position, all_pieces, other_pieces);
-	processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
-    }
- 
-    int king_position = bithack.leastSignificant(pieces[KING + side_index_adder]);
-    uint64_t king_move_board = getKingMoves(king_position, all_pieces, other_pieces);
-    processMoveBoard(&moves, king_move_board, other_pieces, king_position, KING);
-
-    uint64_t rooks = pieces[ROOK + side_index_adder];
-    processDoublePieceMoves(rooks, all_pieces, other_pieces, &moves, &Board::straightMoves, ROOK);    
-   
-
-    uint64_t bishops = pieces[BISHOP + side_index_adder]; 
-    processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
- 
-    uint64_t knights = pieces[KNIGHT + side_index_adder]; 
-    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::knightMoves, KNIGHT);    
-
-    uint64_t pawns = pieces[PAWN + side_index_adder];
-    if (side == WHITE)
-	whitePawnMoves(pawns, all_pieces, other_pieces, &moves);
-    else 
-	blackPawnMoves(pawns, all_pieces, other_pieces, &moves);
-
-    return moves;
-}
-
-
-void Board::display_bitboard(uint64_t board){
-    for (int i=63; i >= 0; i--){
-        if ((1ULL << i) & board)
-            cout << "1 ";
-        else
-            cout << "0 ";
-
-        if (i % 8 == 0)
-            cout << "\n";
-    }
-}
-
 
 void Board::initializeFromFen(string fen){
-    cout << fen << "\n";
     for (int i=0; i < 12; i++){
         pieces[i] = 0ULL;
     }
@@ -496,10 +577,8 @@ void Board::initializeFromFen(string fen){
 
         i++;
         c = fen.at(i);
-	cout << c;
     
     }
-    cout << "\n";
     i++;
     c = fen.at(i);
 
@@ -507,43 +586,142 @@ void Board::initializeFromFen(string fen){
 }
 
 
-void Board::printBoard(){
+bool Board::isLegal(Move move){
+    bool returnBool = true;
+    std::ofstream errFile ("IllegalMoves.txt", std::ios::app);
 
-    std::map<int, char> piece_map;
-    piece_map[KING] = 'K';
-    piece_map[QUEEN] = 'Q';
-    piece_map[ROOK] = 'R';
-    piece_map[BISHOP] = 'B';
-    piece_map[KNIGHT] = 'N';
-    piece_map[PAWN] = 'P';
-    piece_map[KING + 6] = 'k';
-    piece_map[QUEEN + 6] = 'q';
-    piece_map[ROOK + 6] = 'r';
-    piece_map[BISHOP + 6] = 'b';
-    piece_map[KNIGHT + 6] = 'n';
-    piece_map[PAWN + 6] = 'p';
+    int from = move.squares[0];
+    uint64_t from_board = 1ULL << from;
+    int to = move.squares[1];
+    uint64_t to_board = 1ULL << to;
 
-    for (int i=63; i >= 0; i--){
-        uint64_t piece_at_index = 1ULL << i;
-        bool found_piece = false;
-        for (int j=0; j < 12; j++){
-            if (pieces[j] & piece_at_index){
-                found_piece = true;
-                cout << piece_map[j] << " ";
-            }
-        }
-
-        if (!found_piece) {
-            cout << "0 ";
-        }
-
-        if (i % 8 == 0){
-            cout << "\n";
-        }
-
-        //cout << "i: " << i << "\n";
+    if (from < 0 || from > 63){
+	errFile << "From square out of bounds: " << from << "\n";
+	returnBool = false;
     }
+
+    if (to < 0 || to > 63){
+	errFile << "To square out of bounds: " << to << "\n";
+	returnBool = false;
+    }
+    
+    if (from == to){
+	errFile << "From and to squares are the same: " << from << "\n";
+	returnBool = false;
+    }
+ 
+
+    int from_x = from % 8;
+    int from_y = from / 8;
+    int to_x = to % 8;
+    int to_y = to / 8;
+    
+    int dx = abs(from_x - to_x);
+    int dy = abs(from_y - to_y);
+
+    uint64_t friendly_pieces = 0;
+    uint64_t opposite_pieces = 0;
+
+    if (half_turn % 2 == WHITE){
+	for (int i=0; i < 6; i++){
+	    friendly_pieces |= pieces[i];
+	}
+
+	for (int i=6; i < 12; i++){
+	    opposite_pieces |= pieces[i];
+
+	}
+    } else {
+	for (int i=0; i < 6; i++){
+	    opposite_pieces |= pieces[i];
+	}
+
+	for (int i=6; i < 12; i++){
+	    friendly_pieces |= pieces[i];
+
+	}
+    }
+
+
+
+    if (to_board & friendly_pieces){
+	errFile << "To square is occupied by friendly piece: " << to << "\n";
+	errFile << "To board: \n";
+	errFile << bitboardToString(friendly_pieces);
+	errFile << "\n";
+	returnBool = false;
+    }
+
+
+    if (move.type == KING){
+	if (dx > 1 || dy > 1){
+	    errFile << "King moves too far: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+    }
+    else if (move.type == QUEEN){
+	if (!(dx == 0 || dy == 0 || abs(dx) == abs(dy))){
+	    errFile << "Queen move direction is not valid: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+
+	    
+    }
+    else if (move.type == ROOK){
+	if (dx != 0 && dy != 0){
+	    errFile << "Rook move direction is not valid: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+    }
+    else if (move.type == BISHOP){
+	if (dx != dy){
+	    errFile << "Bishop move direction is not valid: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+
+    }
+    else if (move.type == KNIGHT){
+	if (dx == 0 || dy == 0 || abs(dx) + abs(dy) != 3){
+	    errFile << "Knight move is not valid: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+
+    }
+    else if (move.type == PAWN){
+	if (!((dx == 0 && dy == 1) || (dx == 1 && dy == 1) || (dx == 0 && dy == 2))){
+	    errFile << "Pawn move is not valid: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+	if (abs(dx) + abs(dy) == 2 && !(to_board && opposite_pieces)){
+	    errFile << "Pawn is taking when no opponent piece on square: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}
+	if ((dx == 0 && dy == 1) && to_board & (opposite_pieces & friendly_pieces)){
+	    errFile << "Pawn is moving one space when blocked: " << from << " to " << to << "\n";
+	    returnBool = false;
+
+	}
+	if ((dx == 0 && dy == 2) && to_board & (opposite_pieces & friendly_pieces)){
+	    errFile << "Pawn is moving two spaces when blocked: " << from << " to " << to << "\n";
+	    returnBool = false;
+	}	
+
+    }
+
+    
+    if (!returnBool){	
+	errFile << toString();
+	string move_string = move.moveCode();	
+	errFile << "From: " << from << " to: " << to << "\n";
+	errFile << "Move: " << move_string << "\n\n";
+    }
+    return returnBool;
+
+
+
 }
+
+
 
 
 void Board::debug(){
@@ -551,6 +729,8 @@ void Board::debug(){
 
 }
 
+
+/* 
 int main(){
     Board board;
     
@@ -561,3 +741,4 @@ int main(){
     board_moves.displayMoves();
     
 }
+*/

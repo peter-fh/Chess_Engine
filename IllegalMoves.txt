@@ -1,0 +1,902 @@
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+1 1 1 0 0 0 0 1 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 r 
+p p p p p p p p 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+P P P 0 0 0 0 P 
+R N B Q k 0 K B k 0 R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+1 1 1 0 0 0 0 1 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 r 
+p p p p p p p p 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+P P P 0 0 0 0 P 
+R N B Q k 0 K B 0 R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 5
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+1 1 1 0 0 0 0 1 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 r 
+p p p p p p p p 
+0 0 0 0 0 n 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+P P P 0 0 0 0 P 
+R N B k Q k 0 K B 0 R k 
+From: 4 to: 5
+Move: Qxc1
+
+To square is occupied by friendly piece: 5
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+1 1 1 0 0 0 0 1 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n r 
+p p p p p p 0 p 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+P P P 0 0 0 0 P 
+R N B k Q k 0 K B 0 R k 
+From: 4 to: 5
+Move: Qxc1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n r 
+p p p p p p p p 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 k 
+R N B Q k 0 K B k 0 R 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n r 
+p p p p p p p p 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 k 
+R N B Q k 0 K B 0 R 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 r 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 r 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 p 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+1 1 0 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 p 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+P P 0 P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+1 0 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+P 0 P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+1 0 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+P 0 P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+1 0 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+P 0 P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+1 0 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+P 0 P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 0 0 0 0 0 0 
+0 P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 0 0 0 0 0 0 
+0 P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 0 0 0 0 0 0 
+0 P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 0 0 0 0 0 0 
+0 P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 1 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 P 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 1 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 P 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 1 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 P 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 1 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 P 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 1 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 P 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 1 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 P 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 1 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 P 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 1 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 P 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 P 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 P 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 P 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 0 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 P 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 0 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 P 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 P 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 0 P 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 P 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 P 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 P 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 1 0 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b n 0 
+p p p p p p 0 0 
+0 0 0 0 0 0 p 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 P 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P P 0 P 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 0 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P 0 P P 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 0 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P 0 P P 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 5
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 1 0 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 n 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 P 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P P P 0 P P 0 0 
+R N B k Q k 0 K B 0 K R k 
+From: 4 to: 5
+Move: Qxc1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 0 1 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P P 0 P P P 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 1 0 1 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 0 P 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P P 0 P P P 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 1 1 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 P P P P 0 0 
+R N B Q k 0 K B k 0 K R k 
+From: 4 to: 2
+Move: Qxf1
+
+To square is occupied by friendly piece: 2
+To board: 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+0 1 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+1 0 1 1 1 1 0 0 
+1 1 1 1 0 1 0 1 
+
+r n b q k b 0 0 
+p p p p p p p 0 
+0 0 0 0 0 0 0 n 
+0 0 0 0 0 0 0 0 
+0 P 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 
+P 0 P P P P 0 0 
+R N B Q k 0 K B 0 K R k 
+From: 0 to: 2
+Move: Rxf1
+

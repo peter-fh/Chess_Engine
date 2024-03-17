@@ -1,13 +1,12 @@
 #include "Move.h"
 
+
+const int MOVES_LENGTH = 100;
+
+
 class Moves{
-    Move moves[150];
-    int index;
-    int len;
-
-
+    
 public:
-
     Moves(): index(0), len(0){} 
     Move getMove();
     void next();
@@ -18,7 +17,18 @@ public:
     void setLast();
     int length();
     void displayMoves();        
+private:
+    Move moves[MOVES_LENGTH];
+    int index;
+    int len;
+};
 
+
+class iterator{
+    int index;
+    iterator& operator++();
+    iterator operator*();
+    bool operator!=(const iterator& other);
 };
 
 
