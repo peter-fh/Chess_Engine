@@ -14,8 +14,8 @@ Moves Board::getMoves(){
     Moves moves;
     
 
-    uint64_t white_pieces = 0;
-    uint64_t black_pieces = 0; 
+    uint64_t white_pieces = 0ULL;
+    uint64_t black_pieces = 0ULL; 
     for (int i=0; i < 6; i++){
         white_pieces |= pieces[i];
         black_pieces |= pieces[i+6];
@@ -61,7 +61,7 @@ Moves Board::getMoves(){
     processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
  
     uint64_t knights = pieces[KNIGHT + side_index_adder]; 
-    processDoublePieceMoves(knights, all_pieces, same_pieces, &moves, &Board::knightMoves, KNIGHT);    
+    processDoublePieceMoves(knights, all_pieces, other_pieces, &moves, &Board::knightMoves, KNIGHT);    
 
     uint64_t pawns = pieces[PAWN + side_index_adder];
     if (side == WHITE)
@@ -88,8 +88,7 @@ void Board::makeMove(Move move){
     pieces[move.type + side_index_adder] |= to_board;
 
     if (move.take >= 0){
-	std::cout << "TAKING\n";
-	pieces[move.take + side_index_adder] &= ~to_board;
+	pieces[move.take + 6 - side_index_adder] &= ~to_board;
     }
     half_turn++;
 
@@ -104,10 +103,10 @@ void Board::unmakeMove(Move move){
     if ((half_turn-1) % 2 == BLACK){
 	side_index_adder = 6;
     }
-    uint64_t from_board = 1ULL << move.squares[TO];
-    uint64_t to_board = 1ULL << move.squares[FROM];
-    pieces[move.type + side_index_adder] &= ~from_board;
-    pieces[move.type + side_index_adder] |= to_board;
+    uint64_t from_board = 1ULL << move.squares[FROM];
+    uint64_t to_board = 1ULL << move.squares[TO];
+    pieces[move.type + side_index_adder] &= ~to_board;
+    pieces[move.type + side_index_adder] |= from_board;
 
     if (move.take >= 0){
 	pieces[6-side_index_adder + move.take] |= to_board;
@@ -172,6 +171,8 @@ string Board::toString(){
         //cout << "i: " << i << "\n";
     }
 
+    board_string += "\nHalf turn: " + std::to_string(half_turn) + "\n"; 
+
     return board_string;
 }
 
@@ -195,10 +196,15 @@ bool Board::validBoardState(){
     for (int i=0; i < 12; i++){
 	for (int j=0; j < 12; j++){
 	    if (j != i && pieces[i] & pieces[j]){
+		std::cout << "i: " << i << " j: " << j << "\n";
+		std::cout << bitboardToString(pieces[i]) << "\n" << bitboardToString(pieces[j]) << "\n";
 		return false;
 	    }
 	}
     }
+
+    if (!pieces[0] || !pieces[6])
+	return false;
     return true;
 }
 
@@ -271,8 +277,15 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
         move.squares[0] = piece_position;
         move.squares[1] = move_square;
         move.type = piece_type;
-	if (move_piece & other_pieces){
-	    move.take = detectTakenPiece(move_board);
+	if ((move_piece & other_pieces) != 0){
+	    move.take = detectTakenPiece(move_piece);
+	    if (move.take == -1){
+		std::cout << "Exited from detectTakenPiece\n";
+		std::cout << bitboardToString(other_pieces);
+		std::cout << "Half turn: " << half_turn << "\n";
+		std::cout << "Move: " << move.moveCode() << "\n";
+		exit(0);
+	    }
 	}
 	else {
 	    move.take = -1;
@@ -317,7 +330,8 @@ uint64_t Board::getKingMoves(int position, uint64_t same_pieces){
 }
 
 
-uint64_t Board::knightMoves(int position, uint64_t same_pieces, uint64_t other_pieces){
+uint64_t Board::knightMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
+    uint64_t same_pieces = all_pieces & ~other_pieces;
     if (position < 0)
 	return 0ULL;
     uint64_t knight = 1ULL << position;
@@ -368,16 +382,16 @@ uint64_t Board::knightMoves(int position, uint64_t same_pieces, uint64_t other_p
 
 
 int Board::detectTakenPiece(uint64_t move_board){
-    int side_index_adder = 0;
-    if (half_turn % 2 == BLACK){
-	side_index_adder = 6;
+    int other_side_index_adder = 6;
+    if (half_turn % 2 == 1){
+	other_side_index_adder = 0;
     }
-
-    for (int i=side_index_adder; i < (6 + side_index_adder); i++){
-	if (pieces[i] & move_board){
-	    return i - side_index_adder;
+    for (int i=other_side_index_adder ; i < 6+other_side_index_adder ; i++){
+	if ((pieces[i] & move_board) != 0){
+	    return i % 6;
 	}
-    }
+    } 
+
 
     return -1;
 
@@ -619,6 +633,8 @@ void Board::initializeFromFen(string fen){
     }
     i++;
     c = fen.at(i);
+
+    half_turn = 0;
 
     
 }

@@ -6,6 +6,27 @@ using std::cout;
 
 void dfs(Board *chess_board, int depth){
 
+    if (depth == 0) {
+	return;
+    }
+
+    Moves board_moves = chess_board->getMoves();
+    while (board_moves.hasNext()){
+
+	Move current_move = board_moves.getMove();
+	
+	chess_board->makeMove(current_move);
+	dfs(chess_board, depth - 1);
+	chess_board->unmakeMove(current_move);
+
+	board_moves.next();
+    }
+
+}
+
+
+void dfsDebug(Board *chess_board, int depth){
+
     cout << "\nBoard (depth " << depth << "):\n";
     cout << chess_board->toString();
     if (depth == 0) {
@@ -16,24 +37,51 @@ void dfs(Board *chess_board, int depth){
     board_moves.displayMoves();
     cout << "\n";
  
-    while (chess_board->validBoardState() && board_moves.hasNext()){
+    //while (chess_board->validBoardState() && board_moves.hasNext()){
+    while (board_moves.hasNext()){
+	if (!chess_board->validBoardState()){
+	    cout << "Invalid state. Exiting.\n";
+	    exit(0);
+	} 
 	Move current_move = board_moves.getMove();
 	if (!chess_board->isLegal(current_move)){
 	    cout << "Illegal move found\n";
-	}
+	} 
 	
 	chess_board->makeMove(current_move);
 	cout << current_move.moveCode();
-	dfs(chess_board, depth - 1);
+	dfsDebug(chess_board, depth - 1);
 	chess_board->unmakeMove(current_move);
 	board_moves.next();
     }
 
-
-
-
 }
 
+void playGame(){
+    Board board = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board *chess_board = &board;
+    Moves board_moves = chess_board->getMoves();
+    while (board_moves.length() != 0 ){
+	// cout << "BEFORE MOVES:\n";
+	cout << chess_board->toString();
+	if (!chess_board->validBoardState()){
+	    cout << "Invalid state. Exiting.\n";
+	    exit(0);
+	}
+	Move random_move = board_moves.randomMove();
+	chess_board->makeMove(random_move);
+	// cout << "AFTER 1 MOVE:\n";
+	// cout << chess_board->toString();
+	// chess_board->unmakeMove(random_move);
+	// cout << "AFTER UNDO MOVE:\n";
+	// cout << chess_board->toString();
+	// chess_board->makeMove(random_move);
+	// cout << "AFTER 1 MOVE:\n";
+	// cout << chess_board->toString();
+	
+	board_moves = chess_board->getMoves();
+    }
+}
 void debugMoves(int depth){
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     dfs(&board, depth);
@@ -78,7 +126,8 @@ void tryTwoMoves(){
 
 
 int main(){
-    debugMoves(5);
+    debugMoves(7);
     //tryTwoMoves();
+    //playGame();
     return 0;
 }

@@ -26,11 +26,13 @@ string Move::moveCode(){
     string row = to_string(squares[TO]/8 + 1);
     char piece = pieces[type];
 
-    if (take){
-        return string() + piece + 'x' + column + row;
+    string take_num = to_string(take);
+    if (take >= 0){
+        return string() + piece + 'x' + column + row + " Take: " + take_num;
     }
 
-    return string() + piece + column + row;
+
+    return string() + piece + column + row + " Take: " + take_num;
 }
 
 

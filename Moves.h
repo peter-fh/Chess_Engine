@@ -9,6 +9,7 @@ class Moves{
 public:
     Moves(): index(0), len(0){} 
     Move getMove();
+    Move randomMove();
     void next();
     bool seek(int seekIndex);
     bool hasNext();
@@ -17,6 +18,7 @@ public:
     void setLast();
     int length();
     void displayMoves();        
+
 private:
     Move moves[MOVES_LENGTH];
     int index;

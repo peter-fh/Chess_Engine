@@ -1,12 +1,18 @@
 #include "Moves.h"
 #include <cstdint>
 #include <iostream>
+#include <time.h>
 
 using std::cout;
 
 
 Move Moves::getMove(){
     return moves[index];
+}
+
+Move Moves::randomMove(){
+    srand(time(NULL));
+    return moves[rand() % len];
 }
 
 void Moves::next(){
