@@ -87,10 +87,9 @@ void Board::makeMove(Move move){
     pieces[move.type + side_index_adder] &= ~from_board;
     pieces[move.type + side_index_adder] |= to_board;
 
-    if (move.take == true){
-	for (int i = (6 - side_index_adder); i < 12 - side_index_adder; i++){
-	    pieces[i] &= ~to_board;
-	}
+    if (move.take >= 0){
+	std::cout << "TAKING\n";
+	pieces[move.take + side_index_adder] &= ~to_board;
     }
     half_turn++;
 
@@ -110,8 +109,8 @@ void Board::unmakeMove(Move move){
     pieces[move.type + side_index_adder] &= ~from_board;
     pieces[move.type + side_index_adder] |= to_board;
 
-    if (move.take == true){
-	pieces[6-side_index_adder + previous_taken_piece] |= to_board;
+    if (move.take >= 0){
+	pieces[6-side_index_adder + move.take] |= to_board;
     }
 
     half_turn--;
@@ -192,6 +191,17 @@ string Board::bitboardToString(uint64_t board){
     return bitboard_string;
 }
 
+bool Board::validBoardState(){
+    for (int i=0; i < 12; i++){
+	for (int j=0; j < 12; j++){
+	    if (j != i && pieces[i] & pieces[j]){
+		return false;
+	    }
+	}
+    }
+    return true;
+}
+
 
 bool Board::lonePiece(uint64_t piece){
     if (piece ^ (piece & -piece))
@@ -261,7 +271,12 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
         move.squares[0] = piece_position;
         move.squares[1] = move_square;
         move.type = piece_type;
-        move.take = move_piece & other_pieces;
+	if (move_piece & other_pieces){
+	    move.take = detectTakenPiece(move_board);
+	}
+	else {
+	    move.take = -1;
+	}
         moves->setMove(move);
 
         move_board ^= move_piece;
@@ -352,6 +367,24 @@ uint64_t Board::knightMoves(int position, uint64_t same_pieces, uint64_t other_p
 }
 
 
+int Board::detectTakenPiece(uint64_t move_board){
+    int side_index_adder = 0;
+    if (half_turn % 2 == BLACK){
+	side_index_adder = 6;
+    }
+
+    for (int i=side_index_adder; i < (6 + side_index_adder); i++){
+	if (pieces[i] & move_board){
+	    return i - side_index_adder;
+	}
+    }
+
+    return -1;
+
+    
+}
+
+
 void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*pieceMoves)(int, uint64_t, uint64_t), int piece_type){
     if (!piece){
         return;
@@ -380,7 +413,7 @@ const uint64_t SECOND_ROW_PAWN_MASK = 		0x000000000000FF00;
 const uint64_t SEVENTH_ROW_PAWN_MASK = 		0x00FF000000000000;
 
 
-void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
     if (!pawns)
 	return;
     // mb = move board, can't be bothered to write it out
@@ -403,7 +436,7 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	int pawn_position = bithack.leastSignificant(forward_mb);
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position - 8;
-	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	Move pawn_move = Move(from, pawn_position, PAWN, -1);
 	moves->setMove(pawn_move);
 	forward_mb &= ~pawn;
     }
@@ -413,7 +446,7 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	int pawn_position = bithack.leastSignificant(double_forward_mb);
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position - 16;
-	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	Move pawn_move = Move(from, pawn_position, PAWN, -1);
 	moves->setMove(pawn_move);
 	double_forward_mb &= ~pawn;
     }
@@ -431,7 +464,9 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	    from = pawn_position - 9;
 	else 
 	    from = pawn_position - 7;
-	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+
+	int taken_position = detectTakenPiece(pawn);
+	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
 	moves->setMove(pawn_move);
 	most_significant_take_mb &= ~pawn;
     }
@@ -449,7 +484,8 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	    from = pawn_position - 7;
 	else 
 	    from = pawn_position - 9;
-	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	int taken_position = detectTakenPiece(pawn);
+	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
 	moves->setMove(pawn_move);
 	least_significant_take_mb &= ~pawn;
     }
@@ -457,7 +493,7 @@ void Board::whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 }
 
 
-void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
     if (!pawns)
 	return;
     // mb = move board, can't be bothered to write it out
@@ -483,7 +519,7 @@ void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	int pawn_position = bithack.leastSignificant(forward_mb);
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position + 8;
-	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	Move pawn_move = Move(from, pawn_position, PAWN, -1);
 	moves->setMove(pawn_move);
 	forward_mb &= ~pawn;
     }
@@ -493,7 +529,7 @@ void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	int pawn_position = bithack.leastSignificant(double_forward_mb);
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position + 16;
-	Move pawn_move = Move(from, pawn_position, PAWN, 0);
+	Move pawn_move = Move(from, pawn_position, PAWN, -1);
 	moves->setMove(pawn_move);
 	double_forward_mb &= ~pawn;
     }
@@ -514,7 +550,8 @@ void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	    from = pawn_position + 7;
 	else 
 	    from = pawn_position + 9;
-	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	int taken_position = detectTakenPiece(pawn);
+	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
 	moves->setMove(pawn_move);
 	most_significant_take_mb &= ~pawn;
     }
@@ -534,7 +571,8 @@ void Board::blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pi
 	    from = pawn_position + 9;
 	else 
 	    from = pawn_position + 7;
-	Move pawn_move = Move(from, pawn_position, PAWN, 1);
+	int taken_position = detectTakenPiece(pawn);
+	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
 	moves->setMove(pawn_move);
 	least_significant_take_mb &= ~pawn;
     }

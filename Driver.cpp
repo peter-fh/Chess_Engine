@@ -5,23 +5,25 @@
 using std::cout;
 
 void dfs(Board *chess_board, int depth){
+
+    cout << "\nBoard (depth " << depth << "):\n";
+    cout << chess_board->toString();
     if (depth == 0) {
 	return;
     }
 
-   
-    cout << "\nBoard (depth " << depth << "):\n";
-    cout << chess_board->toString();
     Moves board_moves = chess_board->getMoves();
     board_moves.displayMoves();
     cout << "\n";
-    while (board_moves.hasNext()){
+ 
+    while (chess_board->validBoardState() && board_moves.hasNext()){
 	Move current_move = board_moves.getMove();
 	if (!chess_board->isLegal(current_move)){
 	    cout << "Illegal move found\n";
 	}
-
+	
 	chess_board->makeMove(current_move);
+	cout << current_move.moveCode();
 	dfs(chess_board, depth - 1);
 	chess_board->unmakeMove(current_move);
 	board_moves.next();
@@ -35,6 +37,9 @@ void dfs(Board *chess_board, int depth){
 void debugMoves(int depth){
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     dfs(&board, depth);
+    if (!board.validBoardState()){
+	cout << "Invalid board state!\n";
+    }
 
 }
 
@@ -73,7 +78,7 @@ void tryTwoMoves(){
 
 
 int main(){
-    debugMoves(3);
+    debugMoves(5);
     //tryTwoMoves();
     return 0;
 }

@@ -23,6 +23,7 @@ public:
     string toString();
     string bitboardToString(uint64_t board);
     bool isLegal(Move move);
+    bool validBoardState();
 
 private:
     uint64_t pieces[12];
@@ -41,9 +42,9 @@ private:
     bool lonePiece(uint64_t piece);
     uint64_t knightMoves(int position, uint64_t same_pieces, uint64_t other_pieces);
     uint64_t getKingMoves(int position, uint64_t same_pieces);
-    void whitePawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
-    void blackPawnMoves(int64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
-
+    void whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
+    void blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves);
+    int detectTakenPiece(uint64_t move_board);
     void processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*getPieceMoves) (int, uint64_t, uint64_t), int piece_type);
     void processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type);
 

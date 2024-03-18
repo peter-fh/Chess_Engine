@@ -6,12 +6,12 @@ using namespace std;
 Move::Move(): type(-1) {}
 
 
-Move::Move(int from, int to, int inptype, bool inptake) {
-        squares[FROM] = from; 
-        squares[TO]= to;
-        type = inptype;
-        take = inptake;    
-    }
+Move::Move(int from, int to, int inptype, int inptake) {
+    squares[FROM] = from; 
+    squares[TO]= to;
+    type = inptype;
+    take = inptake;    
+}
 
 
 string Move::moveCode(){

@@ -18,11 +18,11 @@ class Move{
 public:
     int squares[2];
     int type;
-    bool take;
+    int take;
 
     Move();
     
-    Move(int from, int to, int inptype, bool inptake);
+    Move(int from, int to, int inptype, int inptake);
     string moveCode();
     bool isNull();
     bool equals(Move move);
