@@ -24,6 +24,7 @@ public:
     string bitboardToString(uint64_t board);
     bool isLegal(Move move);
     bool validBoardState();
+    int evaluate();
 
 private:
     uint64_t pieces[12];

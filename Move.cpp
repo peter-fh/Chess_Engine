@@ -28,11 +28,11 @@ string Move::moveCode(){
 
     string take_num = to_string(take);
     if (take >= 0){
-        return string() + piece + 'x' + column + row + " Take: " + take_num;
+        return string() + piece + 'x' + column + row;
     }
 
 
-    return string() + piece + column + row + " Take: " + take_num;
+    return string() + piece + column + row;
 }
 
 

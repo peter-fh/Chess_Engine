@@ -1,12 +1,15 @@
 #include <iostream>
-#include "Board.h"
+#include "Engine.h"
 
 
 using std::cout;
+int passes = 0;
 
 void dfs(Board *chess_board, int depth){
 
     if (depth == 0) {
+	passes++;
+	//cout << chess_board->toString();
 	return;
     }
 
@@ -27,29 +30,30 @@ void dfs(Board *chess_board, int depth){
 
 void dfsDebug(Board *chess_board, int depth){
 
-    cout << "\nBoard (depth " << depth << "):\n";
-    cout << chess_board->toString();
+    // cout << "\nBoard (depth " << depth << "):\n";
+    // cout << chess_board->toString();
     if (depth == 0) {
 	return;
     }
 
     Moves board_moves = chess_board->getMoves();
-    board_moves.displayMoves();
-    cout << "\n";
+    // board_moves.displayMoves();
+    // cout << "\n";
  
     //while (chess_board->validBoardState() && board_moves.hasNext()){
     while (board_moves.hasNext()){
 	if (!chess_board->validBoardState()){
+	    cout << chess_board->toString();
 	    cout << "Invalid state. Exiting.\n";
 	    exit(0);
 	} 
 	Move current_move = board_moves.getMove();
 	if (!chess_board->isLegal(current_move)){
-	    cout << "Illegal move found\n";
+	    // cout << "Illegal move found\n";
 	} 
 	
 	chess_board->makeMove(current_move);
-	cout << current_move.moveCode();
+	// cout << current_move.moveCode();
 	dfsDebug(chess_board, depth - 1);
 	chess_board->unmakeMove(current_move);
 	board_moves.next();
@@ -91,6 +95,7 @@ void debugMoves(int depth){
 
 }
 
+
 void tryTwoMoves(){
 
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -126,8 +131,16 @@ void tryTwoMoves(){
 
 
 int main(){
-    debugMoves(7);
+    //debugMoves(6);
     //tryTwoMoves();
     //playGame();
+    //cout << "Number of leaf games: " << passes << "\n";
+    //Board board("2qkqn2/8/8/8/8/8/1QRQQQ2/K7 w KQkq - 0 1");
+    Board board("K7/8/3Q4/8/8/3q4/8/k7 w - - 0 1");
+    Move* engineMove = new Move();
+    cout << min(&board, 4, engineMove) << "\n";
+    cout << engineMove->moveCode();
+
+    
     return 0;
 }

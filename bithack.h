@@ -21,10 +21,11 @@ public:
     // Bit functions
     int leastSignificant(uint64_t piece);
     int mostSignificant(uint64_t piece);
+    int hammingWeight(uint64_t piece);
 
 private:
 
-    int64_t horizontal[8];
+    uint64_t horizontal[8];
     uint64_t vertical[8];
     uint64_t diagonal[15];
     uint64_t counter_diagonal[15];

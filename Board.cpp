@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <ctype.h> 
@@ -8,7 +9,6 @@
 Board::Board(string fen){
     initializeFromFen(fen);
 }
-
 
 Moves Board::getMoves(){
     Moves moves;
@@ -203,10 +203,31 @@ bool Board::validBoardState(){
 	}
     }
 
-    if (!pieces[0] || !pieces[6])
-	return false;
+    /* if (!pieces[0] || !pieces[6])
+	return false; */
     return true;
 }
+
+
+int Board::evaluate(){
+    int evaluation = 0;
+    evaluation += 200000 * bithack.hammingWeight(pieces[KING]);
+    evaluation += 800 * bithack.hammingWeight(pieces[QUEEN]);
+    evaluation += 500 * bithack.hammingWeight(pieces[ROOK]);
+    evaluation += 315 * bithack.hammingWeight(pieces[BISHOP]);
+    evaluation += 300 * bithack.hammingWeight(pieces[KNIGHT]);
+    evaluation += 100 * bithack.hammingWeight(pieces[PAWN]);
+    evaluation -= 200000 * bithack.hammingWeight(pieces[KING + 6]);
+    evaluation -= 800 * bithack.hammingWeight(pieces[QUEEN + 6]);
+    evaluation -= 500 * bithack.hammingWeight(pieces[ROOK + 6]);
+    evaluation -= 315 * bithack.hammingWeight(pieces[BISHOP + 6]);
+    evaluation -= 300 * bithack.hammingWeight(pieces[KNIGHT + 6]);
+    evaluation -= 100 * bithack.hammingWeight(pieces[PAWN + 6]);
+    return evaluation;
+}
+
+
+
 
 
 bool Board::lonePiece(uint64_t piece){
@@ -633,6 +654,11 @@ void Board::initializeFromFen(string fen){
     }
     i++;
     c = fen.at(i);
+    if (c == 'w'){
+		half_turn = WHITE;
+	} else {
+		half_turn = BLACK;
+    }
 
     half_turn = 0;
 
