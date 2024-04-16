@@ -10,6 +10,65 @@ Board::Board(string fen){
     initializeFromFen(fen);
 }
 
+
+string Board::fen(){
+    std::map<int, char> piece_map;
+    piece_map[KING] = 'K';
+    piece_map[QUEEN] = 'Q';
+    piece_map[ROOK] = 'R';
+    piece_map[BISHOP] = 'B';
+    piece_map[KNIGHT] = 'N';
+    piece_map[PAWN] = 'P';
+
+    piece_map[KING + 6] = 'k';
+    piece_map[QUEEN + 6] = 'q';
+    piece_map[ROOK + 6] = 'r';
+    piece_map[BISHOP + 6] = 'b';
+    piece_map[KNIGHT + 6] = 'n';
+    piece_map[PAWN + 6] = 'p';
+    string return_fen = "";
+    int empty_squares = 0;
+    for (int i=63; i >= 0; i--){
+	uint64_t piece = 1ULL << i;
+	bool found_piece = false;
+	for (int i=0; i < 12; i++){
+	    if (piece & pieces[i]){
+		found_piece = true;
+		if (empty_squares != 0){
+		    return_fen += std::to_string(empty_squares);
+		}
+		return_fen += piece_map[i];
+		empty_squares = 0;
+	    } 
+	}
+	if (!found_piece){
+	    empty_squares++;
+	} else {
+	    empty_squares = 0;
+	}
+	if ((i) % 8 == 0 && i != 63 && i != 0){
+	    if (empty_squares != 0){
+		return_fen += std::to_string(empty_squares);
+		empty_squares = 0;
+	    }
+	    return_fen += "/";
+	}
+    }
+    if (empty_squares != 0){
+	return_fen += std::to_string(empty_squares);
+    }
+    return_fen += " ";
+    int current_turn = turn();
+    if (current_turn == WHITE){
+	return_fen += "w";
+    } else {
+	return_fen += "b";
+    }
+
+    return return_fen;
+}
+
+
 Moves Board::getMoves(){
     Moves moves;
     

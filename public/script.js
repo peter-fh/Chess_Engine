@@ -102,6 +102,7 @@ function drawBoard(board, turn) {
                 try {
                         if (isPiece(board[i])) {
                                 img = makePiece(board[i], i, board);
+				img.draggable = false;	
                                 square.appendChild(img);
                         }
                 } catch (error) {
@@ -632,14 +633,7 @@ function onDrop(img, event, board) {
         console.assert(square_at_coordinates != null);
         const to = square_at_coordinates.getAttribute('index');
         const from = img.getAttribute('index');
-        if (to == null || !isLegalMove(img, board, from, to) || inCheck(img, board, from, to)) {
-                img.style.zIndex = 1;
-                origin_square.appendChild(img);
-                img.setAttribute('selected', 'false');
-                img.style.position = 'relative';
-                img.style.left = 0;
-                img.style.top = 0;
-        } else {
+        if (to != null && !inCheck(img, board, from, to) && isLegalMove(img, board, from, to)){
                 img.style.zIndex = 1;
                 board[from] = ' ';
                 board[to] = img.getAttribute('type');
@@ -661,7 +655,14 @@ function onDrop(img, event, board) {
                 } else {
                         board_div.setAttribute('turn', 'w');
                 }
-        }
+        } else {
+                img.style.zIndex = 1;
+                origin_square.appendChild(img);
+                img.setAttribute('selected', 'false');
+                img.style.position = 'relative';
+                img.style.left = 0;
+                img.style.top = 0;
+        } 
 }
 
 
