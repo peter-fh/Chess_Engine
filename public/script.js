@@ -189,6 +189,7 @@ function castle(king_index, board){
         
 }
 
+// TODO: add horsie check
 function inCheck(img, game, from, to) {
 
         var newGame = game.slice();
@@ -453,7 +454,8 @@ function isLegalMove(img, game, from, to) {
                         return false;
                 }
 
-                if (to != 63 && to != 62 && to != 56 && to != 58 && to != 7 && to != 6 && to != 2 && to != 0){
+                //if (to != 63 && to != 62 && to != 56 && to != 58 && to != 7 && to != 6 && to != 2 && to != 0){
+                if (to != 62 && to != 58 && to != 6 && to != 2){
                         return false;
                 }
                 if (isWhite(piece) && hasMoved(60)){
