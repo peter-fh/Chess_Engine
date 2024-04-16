@@ -632,7 +632,6 @@ function onDrop(img, event, board) {
         const to = square_at_coordinates.getAttribute('index');
         const from = img.getAttribute('index');
         if (to != null && !inCheck(img, board, from, to) && isLegalMove(img, board, from, to)){
-                console.log('move successful');
                 img.style.zIndex = 1;
                 board[from] = ' ';
                 board[to] = img.getAttribute('type');
@@ -655,7 +654,6 @@ function onDrop(img, event, board) {
                         board_div.setAttribute('turn', 'w');
                 }
         } else {
-                console.log('move unsuccessful');
                 img.style.zIndex = 1;
                 origin_square.appendChild(img);
                 img.setAttribute('selected', 'false');
