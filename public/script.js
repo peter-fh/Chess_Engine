@@ -20,7 +20,7 @@ function getPieceImgURL(piece) {
         pieceMap.set('b', 'bb');
         pieceMap.set('n', 'nb');
         pieceMap.set('p', 'pb');
-        url = 'res/' + pieceMap.get(piece) + '.png';
+        var url = 'res/' + pieceMap.get(piece) + '.png';
         return url;
 
 }
@@ -51,7 +51,7 @@ function fenToBoard(fen) {
         c = fen.charAt(i);
         let turn = c;
 
-        return [board, c];
+        return [board, turn];
 
 }
 
@@ -101,8 +101,8 @@ function drawBoard(board, turn) {
                 }
                 try {
                         if (isPiece(board[i])) {
-                                img = makePiece(board[i], i, board);
-				img.draggable = false;	
+                                var img = makePiece(board[i], i, board);
+                                img.draggable = false;
                                 square.appendChild(img);
                         }
                 } catch (error) {
@@ -141,7 +141,7 @@ function take(index, img) {
         console.assert(validate());
         const square = document.querySelector('[index="' + index + '"]');
         console.assert(validate());
-        const selected_img = document.querySelector('[selected=true]');
+        //const selected_img = document.querySelector('[selected=true]');
         const old_img = square.querySelector('[selected=false]');
         console.assert(validate());
         square.removeChild(old_img);
@@ -149,45 +149,45 @@ function take(index, img) {
         console.assert(validate());
 }
 
-function castle(king_index, board){
+function castle(king_index, board) {
         var rook_index;
-        if (king_index == 63 || king_index == 62){
+        if (king_index == 63 || king_index == 62) {
                 rook_index = 63;
-        } else if (king_index == 56 || king_index == 58){
+        } else if (king_index == 56 || king_index == 58) {
                 rook_index = 56;
-        } else if (king_index == 7 || king_index == 6){
+        } else if (king_index == 7 || king_index == 6) {
                 rook_index = 7;
-        } else if (king_index == 0 || king_index == 2){
+        } else if (king_index == 0 || king_index == 2) {
                 rook_index = 0;
-        } 
+        }
         const rook_square = document.querySelector('[index="' + rook_index + '"]');
         const rook = rook_square.firstChild;
         console.assert(rook != null);
         var new_rook_square;
-        if (rook_index == 63){
+        if (rook_index == 63) {
                 new_rook_square = document.querySelector('[index="' + 61 + '"]');
                 board[61] = 'R';
                 rook.setAttribute('index', 61);
-        } else if (rook_index == 56){
+        } else if (rook_index == 56) {
                 new_rook_square = document.querySelector('[index="' + 59 + '"]');
                 board[59] = 'R';
                 rook.setAttribute('index', 59);
-        } else if (rook_index == 7){
-                new_rook_square = document.querySelector('[index="' + 5  + '"]');
+        } else if (rook_index == 7) {
+                new_rook_square = document.querySelector('[index="' + 5 + '"]');
                 board[5] = 'r';
                 rook.setAttribute('index', 5);
-        } else if (rook_index == 0){
+        } else if (rook_index == 0) {
                 new_rook_square = document.querySelector('[index="' + 3 + '"]');
                 board[3] = 'r';
                 rook.setAttribute('index', 3);
         }
-        
+
         rook.setAttribute('moved', 'true');
         rook_square.removeChild(rook);
         new_rook_square.appendChild(rook);
         board[rook_index] = ' ';
 
-        
+
 }
 
 // TODO: add horsie check
@@ -199,26 +199,28 @@ function inCheck(img, game, from, to) {
         newGame[to] = piece;
         const white = isWhite(newGame[to]);
         var king_position;
-        for (let i=0; i < 64; i++){
-                if (newGame[i] == 'k' && !white){
+        for (let i = 0; i < 64; i++) {
+                if (newGame[i] == 'k' && !white) {
                         king_position = i;
-                } else if (newGame[i] == 'K' && white){
+                } else if (newGame[i] == 'K' && white) {
                         king_position = i;
                 }
         }
         console.assert(king_position != null);
         const king_x = king_position % 8;
         const king_y = Math.floor(king_position / 8);
-        
-        var index = (x, y) => {return parseInt(y*8+x);};
+        console.log('inside inCheck');
+
+        var index = (x, y) => { return parseInt(y * 8 + x); };
         var diagonalCheck = () => {
-                var isDiagonal = (piece) => {return (piece.toLowerCase() == 'b' || piece.toLowerCase() == 'q');}
+                var isDiagonal = (piece) => { return (piece.toLowerCase() == 'b' || piece.toLowerCase() == 'q'); }
                 let x = king_x - 1;
                 let y = king_y - 1;
-                while (x >= 0 && y >= 0){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)){
+                var piece_at_index;
+                while (x >= 0 && y >= 0) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)) {
                                         return true;
                                 } else {
                                         break;
@@ -231,10 +233,10 @@ function inCheck(img, game, from, to) {
 
                 x = king_x + 1;
                 y = king_x - 1;
-                while (x <= 7 && y >= 0){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)){
+                while (x <= 7 && y >= 0) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)) {
                                         return true;
                                 } else {
                                         break;
@@ -247,13 +249,13 @@ function inCheck(img, game, from, to) {
 
                 x = king_x - 1;
                 y = king_y + 1;
-                while (x >= 0 && y <= 7){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)){
+                while (x >= 0 && y <= 7) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)) {
 
                                         return true;
-                                } else if (piece_at_index != ' '){
+                                } else if (piece_at_index != ' ') {
 
                                         break;
                                 }
@@ -266,10 +268,10 @@ function inCheck(img, game, from, to) {
 
                 x = king_x + 1;
                 y = king_y + 1;
-                while (x <= 7 && y <= 7){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)){
+                while (x <= 7 && y <= 7) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isDiagonal(piece_at_index)) {
                                         return true;
                                 } else {
                                         break;
@@ -285,18 +287,18 @@ function inCheck(img, game, from, to) {
         }
 
         var horizontalCheck = () => {
-                
-                var isHorizontal = (piece) => {return (piece.toLowerCase() == 'r' || piece.toLowerCase() == 'q');}
+
+                var isHorizontal = (piece) => { return (piece.toLowerCase() == 'r' || piece.toLowerCase() == 'q'); }
 
                 var x;
                 var y;
 
                 x = king_x - 1;
                 y = king_y;
-                while (x >= 0){
+                while (x >= 0) {
                         var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)){
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)) {
 
                                         return true;
                                 } else {
@@ -310,10 +312,10 @@ function inCheck(img, game, from, to) {
 
                 x = king_x + 1;
                 y = king_y;
-                while (x <= 7){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)){
+                while (x <= 7) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)) {
 
                                         return true;
                                 } else {
@@ -325,10 +327,10 @@ function inCheck(img, game, from, to) {
 
                 x = king_x;
                 y = king_y - 1;
-                while (y >= 0){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)){
+                while (y >= 0) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)) {
 
                                         return true;
                                 } else {
@@ -339,10 +341,10 @@ function inCheck(img, game, from, to) {
                 }
                 x = king_x;
                 y = king_y + 1;
-                while (y <= 7){
-                        var piece_at_index = newGame[index(x, y)];
-                        if (piece_at_index != ' '){
-                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)){
+                while (y <= 7) {
+                        piece_at_index = newGame[index(x, y)];
+                        if (piece_at_index != ' ') {
+                                if (isWhite(piece_at_index) != white && isHorizontal(piece_at_index)) {
 
                                         return true;
                                 } else {
@@ -351,6 +353,7 @@ function inCheck(img, game, from, to) {
                         }
                         y++;
                 }
+                return false;
         }
 
         return diagonalCheck() || horizontalCheck();
@@ -365,31 +368,31 @@ function isLegalMove(img, game, from, to) {
         const dx = xt - xf;
         const dy = yt - yf;
         const piece = img.getAttribute('type');
-        
-        function hasPiece(square){
+
+        function hasPiece(square) {
                 const divs_at_index = document.querySelector('[index="' + square + '"]');
                 const img_at_index = divs_at_index.firstChild;
                 const second_img_at_index = divs_at_index.secondChild;
-                if (img_at_index == null){
+                if (img_at_index == null) {
                         return false;
-                } else if (second_img_at_index != null){
+                } else if (second_img_at_index != null) {
                         return false;
-                } else if (img_at_index.getAttribute('selected') == 'true'){
+                } else if (img_at_index.getAttribute('selected') == 'true') {
                         return true;
                 }
                 return true;
 
         }
-        function hasMoved(square){
+        function hasMoved(square) {
                 const divs_at_index = document.querySelector('[index="' + square + '"]');
                 const img_at_index = divs_at_index.firstChild;
-                if (img_at_index == null){
+                if (img_at_index == null) {
                         return true;
                 }
 
-                if (img_at_index.getAttribute('moved') == 'false'){
+                if (img_at_index.getAttribute('moved') == 'false') {
                         return false;
-                } 
+                }
 
                 return true;
         }
@@ -450,57 +453,57 @@ function isLegalMove(img, game, from, to) {
                 return false;
         }
 
-        function validCastle(){
-                if (from != 60 && from != 4){
+        function validCastle() {
+                if (from != 60 && from != 4) {
                         return false;
                 }
 
                 //if (to != 63 && to != 62 && to != 56 && to != 58 && to != 7 && to != 6 && to != 2 && to != 0){
-                if (to != 62 && to != 58 && to != 6 && to != 2){
+                if (to != 62 && to != 58 && to != 6 && to != 2) {
                         return false;
                 }
-                if (isWhite(piece) && hasMoved(60)){
+                if (isWhite(piece) && hasMoved(60)) {
                         return false;
                 }
-                if (to == 63 || to == 62){
-                        if (hasMoved(63)){
+                if (to == 63 || to == 62) {
+                        if (hasMoved(63)) {
                                 return false;
                         }
 
-                        if (!hasPiece(62) && !hasPiece(61)){
+                        if (!hasPiece(62) && !hasPiece(61)) {
                                 return true;
                         }
-                } else if (to == 56 || to == 58){
+                } else if (to == 56 || to == 58) {
 
-                        if (hasMoved(56)){
+                        if (hasMoved(56)) {
                                 return false;
                         }
 
-                        if (!hasPiece(57) && !hasPiece(58) && !hasPiece(59)){
+                        if (!hasPiece(57) && !hasPiece(58) && !hasPiece(59)) {
                                 return true;
                         }
 
 
                 }
 
-                if (hasMoved(4)){
+                if (hasMoved(4)) {
                         return false;
                 }
 
-                if (to == 7 || to == 6){
-                        if (hasMoved(7)){
+                if (to == 7 || to == 6) {
+                        if (hasMoved(7)) {
                                 return false;
-                        } if (!hasPiece(5) && !hasPiece(6)){
+                        } if (!hasPiece(5) && !hasPiece(6)) {
                                 return true;
                         }
                 }
 
-                if (to == 0 || to == 2){
-                        if (hasMoved(0)){
+                if (to == 0 || to == 2) {
+                        if (hasMoved(0)) {
                                 return false;
                         }
 
-                        if (!hasPiece(1) && !hasPiece(2) && !hasPiece(3)){
+                        if (!hasPiece(1) && !hasPiece(2) && !hasPiece(3)) {
                                 return true;
                         }
                 }
@@ -560,7 +563,7 @@ function isLegalMove(img, game, from, to) {
                         }
                 }
 
-                if (validCastle()){
+                if (validCastle()) {
                         castle(to, game);
                         return true;
                 }
@@ -603,7 +606,7 @@ function validateBoard(board) {
 
 }
 
-function onPickup(img, event, board) {
+function onPickup(img, event) {
         img.setAttribute('selected', 'true');
 
         let squareRect = document.getElementsByClassName('light-square')[0].getBoundingClientRect();
@@ -633,7 +636,9 @@ function onDrop(img, event, board) {
         console.assert(square_at_coordinates != null);
         const to = square_at_coordinates.getAttribute('index');
         const from = img.getAttribute('index');
-        if (to != null && !inCheck(img, board, from, to) && isLegalMove(img, board, from, to)){
+        var checkBool = inCheck(img, board, from, to);
+        if (to != null && !checkBool && isLegalMove(img, board, from, to)) {
+                console.log("check boolean: ", checkBool);
                 img.style.zIndex = 1;
                 board[from] = ' ';
                 board[to] = img.getAttribute('type');
@@ -649,20 +654,21 @@ function onDrop(img, event, board) {
                 img.style.position = 'relative';
                 img.style.left = 0;
                 img.style.top = 0;
-                board_div = document.getElementById('board');
+                var board_div = document.getElementById('board');
                 if (board_div.getAttribute('turn') == 'w') {
                         board_div.setAttribute('turn', 'b');
                 } else {
                         board_div.setAttribute('turn', 'w');
                 }
         } else {
+                console.log("check boolean: ", checkBool);
                 img.style.zIndex = 1;
                 origin_square.appendChild(img);
                 img.setAttribute('selected', 'false');
                 img.style.position = 'relative';
                 img.style.left = 0;
                 img.style.top = 0;
-        } 
+        }
 }
 
 
@@ -670,7 +676,7 @@ function onClick(img, event, board) {
         if (img.getAttribute('selected') == 'true') {
                 onDrop(img, event, board);
         } else {
-                board_div = document.getElementById('board');
+                var board_div = document.getElementById('board');
                 if (isWhite(img.getAttribute('type')) && board_div.getAttribute('turn') == 'b') {
                         return;
                 } else if (!isWhite(img.getAttribute('type')) && board_div.getAttribute('turn') == 'w') {
