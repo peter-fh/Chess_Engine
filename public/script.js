@@ -189,6 +189,7 @@ function castle(king_index, board) {
 
 // TODO: add horsie check
 // TODO: add king check
+// TODO: debug down left diagonal (king bottom left of queen)
 function inCheck(img, game, from, to) {
 
         var newGame = game.slice();
@@ -207,7 +208,7 @@ function inCheck(img, game, from, to) {
         console.assert(king_position != null);
         const king_x = king_position % 8;
         const king_y = Math.floor(king_position / 8);
-        console.log('inside inCheck');
+        //console.log('inside inCheck');
 
         var index = (x, y) => { return parseInt(y * 8 + x); };
         var diagonalCheck = () => {
@@ -639,7 +640,7 @@ function onDrop(img, event, board) {
         const from = img.getAttribute('index');
         var checkBool = inCheck(img, board, from, to);
         if (to != null && !checkBool && isLegalMove(img, board, from, to)) {
-                console.log("check boolean: ", checkBool);
+                // console.log("check boolean: ", checkBool);
                 img.style.zIndex = 1;
                 board[from] = ' ';
                 board[to] = img.getAttribute('type');
@@ -662,7 +663,7 @@ function onDrop(img, event, board) {
                         board_div.setAttribute('turn', 'w');
                 }
         } else {
-                console.log("check boolean: ", checkBool);
+                //console.log("check boolean: ", checkBool);
                 img.style.zIndex = 1;
                 origin_square.appendChild(img);
                 img.setAttribute('selected', 'false');
