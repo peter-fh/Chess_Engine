@@ -1,12 +1,14 @@
 #include <algorithm>
+#include <stdlib.h>
 #include <cstdint>
 #include <iostream>
 #include <ctype.h> 
 #include "Board.h"
 #include <fstream>
+#include <sstream>
 
 
-Board::Board(string fen){
+Board::Board(Fen fen){
     initializeFromFen(fen);
 }
 
@@ -87,17 +89,19 @@ Moves Board::getMoves(){
     int side;
     uint64_t all_pieces = white_pieces | black_pieces;
 
-    if (half_turn % 2 == 0) {
+    if (half_turn % 2 == WHITE) {
 	same_pieces = white_pieces;
 	other_pieces = black_pieces;
 	side_index_adder = 0;
 	side = WHITE;
+	//std::cout << "white's turn\n";
     }
     else {
         same_pieces = black_pieces;
         other_pieces = white_pieces;
         side_index_adder = 6;
 	side = BLACK;
+	// std::cout << "black's turn\n";
     }
 
 
@@ -130,6 +134,9 @@ Moves Board::getMoves(){
     
 
     moves.seek(0);
+    // std::cout << this->toString();
+    // moves.displayMoves();
+    // exit(0);
     return moves;
 }
 
@@ -349,7 +356,7 @@ uint64_t Board::straightMoves(int position, uint64_t all_pieces, uint64_t other_
 
 
 void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
-     
+    //std::cout << bitboardToString(move_board) << "\n";
     while (move_board){
         Move move;
         int move_square = bithack.leastSignificant(move_board);
@@ -676,7 +683,10 @@ void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 
 
 
-void Board::initializeFromFen(string fen){
+void Board::initializeFromFen(Fen fen_obj){
+    std::ostringstream str_stream;
+    str_stream << fen_obj;
+    string fen = str_stream.str();
     for (int i=0; i < 12; i++){
         pieces[i] = 0ULL;
     }
@@ -700,28 +710,26 @@ void Board::initializeFromFen(string fen){
     int i=0;
     char c = fen.at(0);
     while (c != ' '){
-        if (isdigit(c)){
-            index -= c - '0';
-        } else if (piece_map.count(c)){
-            pieces[piece_map[c]] |= 1ULL << index;
-            index--;
-        } 
+	if (isdigit(c)){
+	    index -= c - '0';
+	} else if (piece_map.count(c)){
+	    pieces[piece_map[c]] |= 1ULL << index;
+	    index--;
+	} 
 
-        i++;
-        c = fen.at(i);
-    
+	i++;
+	c = fen.at(i);
+
     }
     i++;
     c = fen.at(i);
     if (c == 'w'){
-		half_turn = WHITE;
-	} else {
-		half_turn = BLACK;
+	half_turn = WHITE;
+    } else {
+	half_turn = BLACK;
     }
 
-    half_turn = 0;
 
-    
 }
 
 

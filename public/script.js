@@ -1,5 +1,3 @@
-// Oops! Something went wrong! :(
-
 function isNumber(c) { return !isNaN(parseInt(c)); }
 
 
@@ -57,7 +55,6 @@ function fenToBoard(fen) {
 
 
 function makePiece(piece, index, board) {
-
         let img = document.createElement('img');
         img.setAttribute('selected', 'false');
         img.setAttribute('type', piece);
@@ -101,7 +98,7 @@ function drawBoard(board, turn) {
                 }
                 try {
                         if (isPiece(board[i])) {
-                                var img = makePiece(board[i], i, board);
+                                let img = makePiece(board[i], i, board);
                                 img.draggable = false;
                                 square.appendChild(img);
                         }
@@ -150,7 +147,7 @@ function take(index, img) {
 }
 
 function castle(king_index, board) {
-        var rook_index;
+        let rook_index;
         if (king_index == 63 || king_index == 62) {
                 rook_index = 63;
         } else if (king_index == 56 || king_index == 58) {
@@ -163,7 +160,7 @@ function castle(king_index, board) {
         const rook_square = document.querySelector('[index="' + rook_index + '"]');
         const rook = rook_square.firstChild;
         console.assert(rook != null);
-        var new_rook_square;
+        let new_rook_square;
         if (rook_index == 63) {
                 new_rook_square = document.querySelector('[index="' + 61 + '"]');
                 board[61] = 'R';
@@ -191,6 +188,7 @@ function castle(king_index, board) {
 }
 
 // TODO: add horsie check
+// TODO: add king check
 function inCheck(img, game, from, to) {
 
         var newGame = game.slice();
@@ -621,6 +619,9 @@ function onPickup(img, event) {
         img.removeEventListener('click', (e) => { onClick(img, e) });
 }
 
+
+// TODO: check for win
+// TODO: end screen
 function onDrop(img, event, board) {
         console.assert(validateBoard(board));
         console.assert(img.getAttribute('selected') == 'true');
@@ -708,7 +709,37 @@ function onMouseMove(e) {
 }
 
 
-let [board, turn] = fenToBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+//var fen = 'K7/8/3Q4/8/8/3q4/8/k7 b - - 0 1'
+
+
+/* let [board, turn] = fenToBoard(fen);
 drawBoard(board, turn);
-document.addEventListener('mousemove', (e) => { onMouseMove(e); });
+document.addEventListener('mousemove', (e) => { onMouseMove(e); }); */
+
+
+function convertPointerToString(ptr) {
+        const buffer = Module.HEAPU8;
+        let str = '';
+        let offset = ptr;
+        while (buffer[offset] !== 0) {
+                let new_char = String.fromCharCode(buffer[offset]);
+                str += new_char;
+                offset++;
+        }
+        return str;
+}
+
+
+Module.onRuntimeInitialized = function() {
+        const inpPtr = stringToNewUTF8('K7/8/3Q4/8/8/3q4/8/k7 b - - 0 1')
+        //const inpPtr = stringToNewUTF8('9')
+        const strPtr = Module._engineMove(inpPtr)
+        const str = convertPointerToString(strPtr);
+        Module._freeStr(strPtr)
+
+        let [board, turn] = fenToBoard(str);
+        drawBoard(board, turn);
+        document.addEventListener('mousemove', (e) => { onMouseMove(e); });
+}
+
 

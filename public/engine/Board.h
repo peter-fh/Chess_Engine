@@ -5,13 +5,14 @@
 #include <string>
 #include "Bithack.h"
 #include "Moves.h"
+#include "Fen.h"
 
 
 class Board{
 
 public:
 
-    Board(string fen);
+    Board(Fen fen);
     Board(Board *inp_board);
 
     Moves getMoves();
@@ -36,7 +37,7 @@ private:
     Moves legal_moves;
     int previous_taken_piece;
 
-    void initializeFromFen(string fen);
+    void initializeFromFen(Fen fen);
     uint64_t directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces);
     uint64_t straightMoves(int position, uint64_t all_piees, uint64_t other_pieces);
     uint64_t diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces);    

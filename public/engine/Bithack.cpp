@@ -157,7 +157,7 @@ int Bithack::hammingWeight(uint64_t piece){
 }
 
 void Bithack::initializeBitPositions(){
-    for (int i=0; i < 0xffff; i++){
+    for (int i=0; i <= 0xffff; i++){
         least_significant_positions[i] = slowLeastSignificant(i);
         most_significant_positions[i] = slowMostSignificant(i);
     }
