@@ -54,6 +54,41 @@ function fenToBoard(fen) {
 }
 
 
+/* function boardToFen(board, turn){
+        var fen = "";
+        let empty = 0;
+        for (let i=0; i < 64; i++){
+                if (board[i] == ' '){
+                        empty++;
+                } else {
+                        if (empty){
+                                fen += empty;
+                        }
+                        fen += board[i];
+                        empty = 0;
+                }
+
+                if ((i + 1) % 8 == 0 && i != 63){
+                        if (empty){
+                                fen += empty;
+                        }
+                        fen += "/";
+                        empty = 0;
+
+                }
+        }
+
+        fen += " ";
+        if (turn == 0){
+                fen += "w";
+        } else {
+                fen += "b";
+        }
+
+        return fen;
+} */
+
+
 function makePiece(piece, index, board) {
         let img = document.createElement('img');
         img.setAttribute('selected', 'false');
@@ -615,7 +650,6 @@ function onPickup(img, event) {
         img.style.top = event.pageY - squareSize + 'px';
         img.style.width = squareSize + 'px';
         img.style.height = squareSize + 'px';
-
         img.style.zIndex = 999;
         img.removeEventListener('click', (e) => { onClick(img, e) });
 }
@@ -662,6 +696,7 @@ function onDrop(img, event, board) {
                 } else {
                         board_div.setAttribute('turn', 'w');
                 }
+
         } else {
                 //console.log("check boolean: ", checkBool);
                 img.style.zIndex = 1;
@@ -710,37 +745,12 @@ function onMouseMove(e) {
 }
 
 
-//var fen = 'K7/8/3Q4/8/8/3q4/8/k7 b - - 0 1'
+var fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 
-/* let [board, turn] = fenToBoard(fen);
+let [board, turn] = fenToBoard(fen);
 drawBoard(board, turn);
-document.addEventListener('mousemove', (e) => { onMouseMove(e); }); */
+document.addEventListener('mousemove', (e) => { onMouseMove(e); });
 
-
-function convertPointerToString(ptr) {
-        const buffer = Module.HEAPU8;
-        let str = '';
-        let offset = ptr;
-        while (buffer[offset] !== 0) {
-                let new_char = String.fromCharCode(buffer[offset]);
-                str += new_char;
-                offset++;
-        }
-        return str;
-}
-
-
-Module.onRuntimeInitialized = function() {
-        const inpPtr = stringToNewUTF8('K7/8/3Q4/8/8/3q4/8/k7 b - - 0 1')
-        //const inpPtr = stringToNewUTF8('9')
-        const strPtr = Module._engineMove(inpPtr)
-        const str = convertPointerToString(strPtr);
-        Module._freeStr(strPtr)
-
-        let [board, turn] = fenToBoard(str);
-        drawBoard(board, turn);
-        document.addEventListener('mousemove', (e) => { onMouseMove(e); });
-}
 
 
