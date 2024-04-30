@@ -17,10 +17,12 @@ const char* engineMove(const char* inp_fen){
     min(board, 4, engineMove);
     board->makeMove(*engineMove);
 
-    fen_str = board->fen();
+    string output_str = board->fen();
+    free(board);
+
     char* output;
-    output = (char*)malloc(sizeof *output * (fen_str.length() + 1));
-    strcpy(output, fen_str.c_str()); 
+    output = (char*)malloc(sizeof *output * (output_str.length() + 1));
+    strcpy(output, output_str.c_str()); 
 
 
     /* char* output;
