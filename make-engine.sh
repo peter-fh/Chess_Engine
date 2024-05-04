@@ -1,0 +1,2 @@
+cd engine/build
+make

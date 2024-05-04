@@ -1,3 +1,5 @@
 test.cpp 
 a.out
 main
+build/*
+env

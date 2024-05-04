@@ -8,7 +8,7 @@ project(Engine VERSION 0.9)
 
 set(SOURCES
     Driver.cpp
-    Engine.cpp
+    Search.cpp
     Board.cpp
     Bithack.cpp
     Moves.cpp
