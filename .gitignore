@@ -1,5 +1,5 @@
 test.cpp 
 a.out
 main
-build/*
+engine/build/
 env
