@@ -4,3 +4,4 @@ main
 engine/build/
 env
 __pycache__/
+log.txt
