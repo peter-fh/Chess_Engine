@@ -1,4 +1,4 @@
-#include <stdbool.h>
+#include <iostream>
 #include "Move.h"
 using namespace std;
 
@@ -13,6 +13,29 @@ Move::Move(int from, int to, int inptype, int inptake) {
     take = inptake;    
 }
 
+    
+std::ostream& operator<<(std::ostream& out, const Move& move){
+
+    if (move.isNull()){
+        out << "null";
+        return out;
+    }
+
+    char pieces[6] = {'K', 'Q', 'R', 'B', 'N', 'P'};
+    char columns[8] = {'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'};
+    char column = columns[move.squares[TO] % 8];
+    string row = to_string(move.squares[TO]/8 + 1);
+    char piece = pieces[move.type];
+
+    string take_num = to_string(move.take);
+    if (move.take >= 0){
+        out << string() + piece + 'x' + column + row;
+        return out;
+    }
+
+    out << string() + piece + column + row;
+    return out;
+}
 
 string Move::moveCode(){
 
@@ -36,7 +59,7 @@ string Move::moveCode(){
 }
 
 
-bool Move::isNull(){
+bool Move::isNull() const{
     if (type == -1)
         return true;
     return false;

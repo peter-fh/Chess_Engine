@@ -3,8 +3,6 @@
 #include <iostream>
 #include <time.h>
 
-using std::cout;
-
 
 Move Moves::getMove(){
     return moves[index];
@@ -66,20 +64,24 @@ int Moves::length(){
 }
 
 
-void Moves::displayMoves(){
-    if (isNull()){
-        cout << "No moves\n";
-        return;
+std::ostream& operator<<(std::ostream& out, Moves moves){
+    if (moves.isNull()){
+        out << "No moves\n";
+        return out;
     }
 
-    seek(0);
+    moves.seek(0);
 
-    cout << getMove().moveCode() << " ";
-    while (hasNext()){
-        next();
-        cout << getMove().moveCode() << " ";
+    out << moves.getMove().moveCode() << " ";
+    while (moves.hasNext()){
+        moves.next();
+        out << moves.getMove().moveCode() << " ";
     }
 
-    seek(0);
+    out << "\n";
+
+    moves.seek(0);
+
+    return out;
 }
 

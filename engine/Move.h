@@ -24,7 +24,8 @@ public:
     
     Move(int from, int to, int inptype, int inptake);
     string moveCode();
-    bool isNull();
+    friend std::ostream& operator<<(std::ostream& out, const Move& move);
+    bool isNull() const;
     bool equals(Move move);
 };
 

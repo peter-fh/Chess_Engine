@@ -1,14 +1,26 @@
 from flask import Flask
 from flask_cors import CORS
 import subprocess
+from datetime import datetime
 
 
 def run_engine(http_fen):
-    return subprocess.run(["./engine/build/Engine", http_fen], capture_output=True, text=True).stdout
+    engine_process = subprocess.run(["./engine/build/Engine", http_fen], 
+                                     capture_output=True, 
+                                     text=True)
+    err_file = open("log.txt", "a")
+    err_file.write(str(datetime.now()))
+    err_file.write("\n")
+    err_file.write(engine_process.stderr)
+    err_file.write("\n\n")
+    err_file.close()
+    return engine_process.stdout
 
 
 def debug_engine(http_fen):
-    engine_process = subprocess.run(["./engine/build/Engine", http_fen], capture_output=True, text=True)
+    engine_process = subprocess.run(["./engine/build/Engine", http_fen],
+                                    capture_output=True, 
+                                    text=True)
     print("Error:")
     print(engine_process.stderr)
     print("Out:")

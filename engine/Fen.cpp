@@ -5,9 +5,10 @@ Fen::Fen(){}
 
 Fen::Fen(string fen){
     int position = 0;
+    int len = fen.length();
 
     pieces = "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' ' && position < len){
 	pieces.push_back(fen[position]);
 	position++;
     }
@@ -15,35 +16,35 @@ Fen::Fen(string fen){
 
 
     turn = "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' '&& position < len){
 	turn.push_back(fen[position]);
 	position++;
     }
     position++;
 
     castle = "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' '&& position < len){
 	castle.push_back(fen[position]);
 	position++;
     }
     position++;
 
     pawn = "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' '&& position < len){
 	pawn.push_back(fen[position]);
 	position++;
     }
     position++;
 
     halfmove= "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' '&& position < len){
 	halfmove.push_back(fen[position]);
 	position++;
     }
     position++;
 
     fullmove = "";
-    while (fen[position] != ' '){
+    while (fen[position] != ' '&& position < len){
 	fullmove.push_back(fen[position]);
 	position++;
     }

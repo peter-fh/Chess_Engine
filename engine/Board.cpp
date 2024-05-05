@@ -60,8 +60,8 @@ string Board::fen(){
 	return_fen += std::to_string(empty_squares);
     }
     return_fen += " ";
-    int current_turn = turn();
-    if (current_turn == WHITE){
+    int current_turn = half_turn;
+    if (current_turn % 2 == WHITE){
 	return_fen += "w";
     } else {
 	return_fen += "b";
@@ -261,8 +261,8 @@ bool Board::validBoardState(){
     for (int i=0; i < 12; i++){
 	for (int j=0; j < 12; j++){
 	    if (j != i && pieces[i] & pieces[j]){
-		std::cout << "i: " << i << " j: " << j << "\n";
-		std::cout << bitboardToString(pieces[i]) << "\n" << bitboardToString(pieces[j]) << "\n";
+		std::cerr << "i: " << i << " j: " << j << "\n";
+		std::cerr << bitboardToString(pieces[i]) << "\n" << bitboardToString(pieces[j]) << "\n";
 		return false;
 	    }
 	}
@@ -274,6 +274,7 @@ bool Board::validBoardState(){
 }
 
 
+// TODO: Piece square tables
 int Board::evaluate(){
     int evaluation = 0;
     evaluation += 200000 * bithack.hammingWeight(pieces[KING]);

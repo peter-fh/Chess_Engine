@@ -17,6 +17,7 @@ public:
     void setMove(Move move);
     void setLast();
     int length();
+    friend std::ostream& operator<<(std::ostream& out, Moves moves);
     void displayMoves();        
 
 private:
