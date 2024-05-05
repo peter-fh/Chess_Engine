@@ -198,9 +198,8 @@ int Board::turn(){
 }
 
 
-string Board::toString(){
+ostream& operator<<(ostream &out, const Board &board){
 
-    string board_string = "";
     std::map<int, char> piece_map;
     piece_map[KING] = 'K';
     piece_map[QUEEN] = 'Q';
@@ -219,27 +218,27 @@ string Board::toString(){
         uint64_t piece_at_index = 1ULL << i;
         bool found_piece = false;
         for (int j=0; j < 12; j++){
-            if (pieces[j] & piece_at_index){
+            if (board.pieces[j] & piece_at_index){
                 found_piece = true;
-                board_string += piece_map[j] ;
-		board_string += " ";
+		out << piece_map[j];
+		out << " ";
             }
         }
 
         if (!found_piece) {
-            board_string += "0 ";
+	    out << "0 ";
         }
 
         if (i % 8 == 0){
-            board_string += "\n";
+	    out << "\n";
         }
 
         //cout << "i: " << i << "\n";
     }
 
-    board_string += "\nHalf turn: " + std::to_string(half_turn) + "\n"; 
+    out << "\nHalf turn: " << std::to_string(board.half_turn) << "\n"; 
 
-    return board_string;
+    return out;
 }
 
 
@@ -857,7 +856,7 @@ bool Board::isLegal(Move move){
 
     
     if (!returnBool){	
-	errFile << toString();
+	errFile << this;
 	string move_string = move.moveCode();	
 	errFile << "From: " << from << " to: " << to << "\n";
 	errFile << "Move: " << move_string << "\n\n";

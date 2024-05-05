@@ -3,3 +3,4 @@ a.out
 main
 engine/build/
 env
+__pycache__/

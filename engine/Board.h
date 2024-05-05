@@ -21,7 +21,7 @@ public:
 
     int turn();
     string fen();
-    string toString();
+    friend ostream &operator<<(ostream& out, const Board &board);
     string bitboardToString(uint64_t board);
     bool isLegal(Move move);
     bool validBoardState();

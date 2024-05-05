@@ -20,19 +20,21 @@ string decode_fen(string http_fen){
 }
 
 
+// TODO: debug waiting for a while and returning nothing 1/5 times
 int main(int argc, char* argv[]){
     if (argc != 2){
         cout << "Invalid call to Driver.cpp (requires http encoded fen)\n";
         return 1;
     }
     string http_fen = argv[1];
-    //string http_fen = "rnbqkbnr_pppppppp_8_8_8_8_PPPPPPPP_RNBQKBNR+w+KQkq+-+0+1";
     string fen = decode_fen(http_fen);
     Board *board = new Board(Fen(fen));
     Move *engine_move = new Move();
     max(board, 4, engine_move);
     board->makeMove(*engine_move);
     cout << board->fen();
+    free(board);
+    free(engine_move);
 
     return 0;
 }
