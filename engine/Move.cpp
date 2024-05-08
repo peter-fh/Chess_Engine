@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& out, const Move& move){
     char piece = pieces[move.type];
 
     string take_num = to_string(move.take);
-    if (move.take >= 0){
+    if (move.take > 0){
         out << string() + piece + 'x' + column + row;
         return out;
     }

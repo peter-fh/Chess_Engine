@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
     string fen = decode_fen(http_fen);
     Fen c_fen(fen);
     Board *board = new Board(c_fen);
-    Move *engine_move = negaMaxRoot(board, 4);
+    Move *engine_move = negaMaxRoot(board, 5);
     board->makeMove(*engine_move);
     cout << board->fen();
     free(board);

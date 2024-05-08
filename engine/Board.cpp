@@ -6,6 +6,7 @@
 #include "Board.h"
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 
 Board::Board(Fen fen){
@@ -71,10 +72,8 @@ string Board::fen(){
 }
 
 
-Moves Board::getMoves(){
-    Moves moves;
+void Board::initializeSidedBoard(){
     
-
     uint64_t white_pieces = 0ULL;
     uint64_t black_pieces = 0ULL; 
     for (int i=0; i < 6; i++){
@@ -83,61 +82,71 @@ Moves Board::getMoves(){
     }
 
 
-    uint64_t same_pieces;
-    uint64_t other_pieces;
-    int side_index_adder;
-    int side;
-    uint64_t all_pieces = white_pieces | black_pieces;
+    sided_board.all_pieces = white_pieces | black_pieces;
 
     if (half_turn % 2 == WHITE) {
-	same_pieces = white_pieces;
-	other_pieces = black_pieces;
-	side_index_adder = 0;
-	side = WHITE;
-	//std::cout << "white's turn\n";
+	sided_board.same_pieces = white_pieces;
+	sided_board.other_pieces = black_pieces;
+	
     }
     else {
-        same_pieces = black_pieces;
-        other_pieces = white_pieces;
-        side_index_adder = 6;
-	side = BLACK;
-	// std::cout << "black's turn\n";
+	sided_board.same_pieces = black_pieces;
+	sided_board.other_pieces = white_pieces;
+	
     }
 
+}
 
-    if (pieces[QUEEN + side_index_adder]) {
-	int queen_position = bithack.leastSignificant(pieces[QUEEN + side_index_adder]);
-	uint64_t queen_move_board = straightMoves(queen_position, all_pieces, other_pieces) 
-				    | diagonalMoves(queen_position, all_pieces, other_pieces);
-	processMoveBoard(&moves, queen_move_board, other_pieces, queen_position, QUEEN);
+
+#define KING_INDEX half_turn % 2 == 0 ? KING : KING + 6
+#define QUEEN_INDEX half_turn % 2 == 0 ? QUEEN : QUEEN + 6
+#define ROOK_INDEX half_turn % 2 == 0 ? ROOK : ROOK + 6
+#define BISHOP_INDEX half_turn % 2 == 0 ? BISHOP : BISHOP + 6
+#define KNIGHT_INDEX half_turn % 2 == 0 ? KNIGHT : KNIGHT + 6
+#define PAWN_INDEX half_turn % 2 == 0 ? PAWN : PAWN + 6
+// TODO: organize based on potential
+Moves* Board::getMoves(){
+    next_moves = new Moves();
+
+    SidedBoard* sided_board = new SidedBoard();
+    initializeSidedBoard();
+
+
+    if (pieces[QUEEN_INDEX]) {
+	int queen_position = 
+	    bithack.leastSignificant(pieces[QUEEN_INDEX]);
+
+	uint64_t queen_move_board = 
+	    straightMoves(queen_position) | diagonalMoves(queen_position);
+
+	processMoveBoard(queen_move_board, queen_position, QUEEN);
     }
  
-    int king_position = bithack.leastSignificant(pieces[KING + side_index_adder]);
-    uint64_t king_move_board = getKingMoves(king_position, same_pieces);
-    processMoveBoard(&moves, king_move_board, other_pieces, king_position, KING);
+    int king_position = bithack.leastSignificant(pieces[KING_INDEX]);
 
-    uint64_t rooks = pieces[ROOK + side_index_adder];
-    processDoublePieceMoves(rooks, all_pieces, other_pieces, &moves, &Board::straightMoves, ROOK);    
+    uint64_t king_move_board = getKingMoves(king_position);
+    processMoveBoard(king_move_board, king_position, KING);
+
+
+    uint64_t rooks = pieces[ROOK_INDEX];
+    processDoublePieceMoves(rooks, ROOK, &Board::straightMoves);    
    
 
-    uint64_t bishops = pieces[BISHOP + side_index_adder]; 
-    processDoublePieceMoves(bishops, all_pieces, other_pieces, &moves, &Board::diagonalMoves, BISHOP);    
+    uint64_t bishops = pieces[BISHOP_INDEX]; 
+    processDoublePieceMoves(bishops, BISHOP, &Board::diagonalMoves);    
  
-    uint64_t knights = pieces[KNIGHT + side_index_adder]; 
-    processDoublePieceMoves(knights, all_pieces, other_pieces, &moves, &Board::knightMoves, KNIGHT);    
+    uint64_t knights = pieces[KNIGHT_INDEX]; 
+    processDoublePieceMoves(knights, KNIGHT, &Board::knightMoves);
 
-    uint64_t pawns = pieces[PAWN + side_index_adder];
-    if (side == WHITE)
-	whitePawnMoves(pawns, all_pieces, other_pieces, &moves);
+    uint64_t pawns = pieces[PAWN_INDEX];
+    if (half_turn % 2 == 0)
+	whitePawnMoves(pawns);
     else 
-	blackPawnMoves(pawns, all_pieces, other_pieces, &moves);
+	blackPawnMoves(pawns);
     
 
-    moves.seek(0);
-    // std::cout << this->toString();
-    // moves.displayMoves();
-    // exit(0);
-    return moves;
+    next_moves->seek(0);
+    return next_moves;
 }
 
 
@@ -181,13 +190,17 @@ void Board::unmakeMove(Move move){
     half_turn--;
 
 }
-uint64_t Board::diagonalMoves (int position, uint64_t all_pieces, uint64_t other_pieces){
+uint64_t Board::diagonalMoves (int position){
     uint64_t move_board = 0ULL;
 
-    move_board |= directionalMoves(position, NORTHEAST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, SOUTHEAST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, SOUTHWEST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, NORTHWEST, all_pieces, other_pieces);
+    move_board |= 
+	directionalMoves(position, NORTHEAST);
+    move_board |= 
+	directionalMoves(position, SOUTHEAST);
+    move_board |= 
+	directionalMoves(position, SOUTHWEST);
+    move_board |= 
+	directionalMoves(position, NORTHWEST);
 
     return move_board;
 }
@@ -262,7 +275,8 @@ bool Board::validBoardState(){
 	for (int j=0; j < 12; j++){
 	    if (j != i && pieces[i] & pieces[j]){
 		std::cerr << "i: " << i << " j: " << j << "\n";
-		std::cerr << bitboardToString(pieces[i]) << "\n" << bitboardToString(pieces[j]) << "\n";
+		std::cerr << bitboardToString(pieces[i]) << "\n" ;
+		std::cerr << bitboardToString(pieces[j]) << "\n";
 		return false;
 	    }
 	}
@@ -274,21 +288,36 @@ bool Board::validBoardState(){
 }
 
 
-// TODO: Piece square tables
+int Board::evaluatePiece(uint64_t board, int* table, int evaluation){
+    int eval = 0;
+    int side_multiplier = 1;
+    if (abs(evaluation) != evaluation){
+	side_multiplier = -1;
+    }
+    while (board){
+	int pos = bithack.leastSignificant(board);
+	eval += table[63-pos] * side_multiplier + evaluation;
+	board &= ~(1ULL << pos);
+    }
+
+    return eval;
+}
+
+
 int Board::evaluate(){
     int evaluation = 0;
-    evaluation += 200000 * bithack.hammingWeight(pieces[KING]);
-    evaluation += 800 * bithack.hammingWeight(pieces[QUEEN]);
-    evaluation += 500 * bithack.hammingWeight(pieces[ROOK]);
-    evaluation += 315 * bithack.hammingWeight(pieces[BISHOP]);
-    evaluation += 300 * bithack.hammingWeight(pieces[KNIGHT]);
-    evaluation += 100 * bithack.hammingWeight(pieces[PAWN]);
-    evaluation -= 200000 * bithack.hammingWeight(pieces[KING + 6]);
-    evaluation -= 800 * bithack.hammingWeight(pieces[QUEEN + 6]);
-    evaluation -= 500 * bithack.hammingWeight(pieces[ROOK + 6]);
-    evaluation -= 315 * bithack.hammingWeight(pieces[BISHOP + 6]);
-    evaluation -= 300 * bithack.hammingWeight(pieces[KNIGHT + 6]);
-    evaluation -= 100 * bithack.hammingWeight(pieces[PAWN + 6]);
+    evaluation += evaluatePiece(pieces[KING], pst.white_king, 20000);
+    evaluation += evaluatePiece(pieces[QUEEN], pst.white_queen, 800);
+    evaluation += evaluatePiece(pieces[ROOK], pst.white_rook, 500);
+    evaluation += evaluatePiece(pieces[BISHOP], pst.white_bishop, 315);
+    evaluation += evaluatePiece(pieces[KNIGHT], pst.white_knight, 300);
+    evaluation += evaluatePiece(pieces[PAWN], pst.white_pawn, 100);
+    evaluation += evaluatePiece(pieces[KING + 6], pst.black_king, -20000);
+    evaluation += evaluatePiece(pieces[QUEEN + 6], pst.black_queen, -800);
+    evaluation += evaluatePiece(pieces[ROOK + 6], pst.black_rook, -500);
+    evaluation += evaluatePiece(pieces[BISHOP + 6], pst.black_bishop, -315);
+    evaluation += evaluatePiece(pieces[KNIGHT + 6], pst.black_knight, -300);
+    evaluation += evaluatePiece(pieces[PAWN + 6], pst.black_pawn, -100);
     return evaluation;
 }
 
@@ -304,7 +333,8 @@ bool Board::lonePiece(uint64_t piece){
 }
 
 
-uint64_t Board::directionalMoves(int position, int direction, uint64_t all_pieces, uint64_t other_pieces){
+uint64_t Board::directionalMoves(int position, int direction){
+
     if (position < 0)
         return 0ULL;
     uint64_t piece = 1ULL << position;
@@ -312,7 +342,7 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
     uint64_t directional_ray = bithack.castRay(position, direction);
 
     int collision_position;
-    uint64_t collisions = directional_ray & (all_pieces ^ piece);
+    uint64_t collisions = directional_ray & (sided_board.all_pieces ^ piece);
 
 
 
@@ -330,7 +360,7 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
     move_board = directional_ray & collision_mask;
 
     uint64_t significant_collision = 1ULL << collision_position;
-    if (significant_collision & other_pieces){
+    if (significant_collision & sided_board.other_pieces){
         move_board |= significant_collision;
     }
 
@@ -343,19 +373,21 @@ uint64_t Board::directionalMoves(int position, int direction, uint64_t all_piece
 }
 
 
-uint64_t Board::straightMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
+uint64_t Board::straightMoves(int position){
+
     uint64_t move_board = 0ULL;
 
-    move_board |= directionalMoves(position, NORTH, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, EAST, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, SOUTH, all_pieces, other_pieces);
-    move_board |= directionalMoves(position, WEST, all_pieces, other_pieces);
+    move_board |= directionalMoves(position, NORTH);
+    move_board |= directionalMoves(position, EAST);
+    move_board |= directionalMoves(position, SOUTH);
+    move_board |= directionalMoves(position, WEST);
 
     return move_board;
 }
 
 
-void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_pieces, int piece_position, int piece_type){
+void Board::processMoveBoard(uint64_t move_board, int piece_position, int piece_type){
+
     //std::cout << bitboardToString(move_board) << "\n";
     while (move_board){
         Move move;
@@ -364,11 +396,11 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
         move.squares[0] = piece_position;
         move.squares[1] = move_square;
         move.type = piece_type;
-	if ((move_piece & other_pieces) != 0){
+	if ((move_piece & sided_board.other_pieces) != 0){
 	    move.take = detectTakenPiece(move_piece);
 	    if (move.take == -1){
 		std::cout << "Exited from detectTakenPiece\n";
-		std::cout << bitboardToString(other_pieces);
+		std::cout << bitboardToString(sided_board.other_pieces);
 		std::cout << "Half turn: " << half_turn << "\n";
 		std::cout << "Move: " << move.moveCode() << "\n";
 		exit(0);
@@ -377,7 +409,7 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
 	else {
 	    move.take = -1;
 	}
-        moves->setMove(move);
+        next_moves->setMove(move);
 
         move_board ^= move_piece;
 
@@ -389,7 +421,7 @@ void Board::processMoveBoard(Moves *moves, uint64_t move_board, uint64_t other_p
 
         
 
-uint64_t Board::getKingMoves(int position, uint64_t same_pieces){
+uint64_t Board::getKingMoves(int position){
     if (position < 0)
 	return 0ULL;
     int x = position % 8;
@@ -411,14 +443,15 @@ uint64_t Board::getKingMoves(int position, uint64_t same_pieces){
                         | bithack.getHorizontal(position)
                         | bithack.getVertical(position);
 
-    return ~same_pieces & (king_position_mask & king_moves_mask);
+    return ~sided_board.same_pieces & (king_position_mask & king_moves_mask);
 
     
 }
 
 
-uint64_t Board::knightMoves(int position, uint64_t all_pieces, uint64_t other_pieces){
-    uint64_t same_pieces = all_pieces & ~other_pieces;
+uint64_t Board::knightMoves(int position){
+
+    uint64_t same_pieces = sided_board.all_pieces & ~sided_board.other_pieces;
     if (position < 0)
 	return 0ULL;
     uint64_t knight = 1ULL << position;
@@ -486,23 +519,29 @@ int Board::detectTakenPiece(uint64_t move_board){
 }
 
 
-void Board::processDoublePieceMoves(uint64_t piece, uint64_t all_pieces, uint64_t other_pieces, Moves *moves, uint64_t (Board::*pieceMoves)(int, uint64_t, uint64_t), int piece_type){
+void Board::processDoublePieceMoves(
+    uint64_t piece,  int piece_type,
+    uint64_t (Board::*pieceMoves)(int)){
+
     if (!piece){
         return;
     }
     if (lonePiece(piece)){
 	int piece_position = bithack.leastSignificant(piece);
-	uint64_t piece_moves = (this->*pieceMoves)(piece_position, all_pieces, other_pieces);
-	processMoveBoard(moves, piece_moves, other_pieces, piece_position, piece_type);
+	uint64_t piece_moves = 
+	    (this->*pieceMoves)(piece_position);
+	processMoveBoard(piece_moves, piece_position, piece_type);
 	return;
     }
 
     int piece1 = bithack.leastSignificant(piece); 
     int piece2 = bithack.mostSignificant(piece); 
-    uint64_t piece1_move_board = (this->*pieceMoves)(piece1, all_pieces, other_pieces); 
-    uint64_t piece2_move_board = (this->*pieceMoves)(piece2, all_pieces, other_pieces); 
-    processMoveBoard(moves, piece1_move_board, other_pieces, piece1, piece_type);
-    processMoveBoard(moves, piece2_move_board, other_pieces, piece2, piece_type);
+    uint64_t piece1_move_board = 
+	(this->*pieceMoves)(piece1); 
+    uint64_t piece2_move_board = 
+	(this->*pieceMoves)(piece2); 
+    processMoveBoard(piece1_move_board, piece1, piece_type);
+    processMoveBoard(piece2_move_board, piece2, piece_type);
  
  
 }
@@ -514,23 +553,28 @@ const uint64_t SECOND_ROW_PAWN_MASK = 		0x000000000000FF00;
 const uint64_t SEVENTH_ROW_PAWN_MASK = 		0x00FF000000000000;
 
 
-void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+void Board::whitePawnMoves(uint64_t pawns){ 
     if (!pawns)
 	return;
     // mb = move board, can't be bothered to write it out
-    uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) << 8) & (~all_pieces); 
-    uint64_t double_forward_mb = ((pawns & SECOND_ROW_PAWN_MASK) << 16) & (~all_pieces); 
-    uint64_t promotion_mb = ((pawns & SEVENTH_ROW_PAWN_MASK) << 8) & (~all_pieces);
+    uint64_t forward_mb = 
+	((pawns & (FORWARD_PAWN_MASK)) << 8) & (~sided_board.all_pieces); 
+    uint64_t double_forward_mb = 
+	((pawns & SECOND_ROW_PAWN_MASK) << 16) & (~sided_board.all_pieces); 
+    uint64_t promotion_mb = 
+	((pawns & SEVENTH_ROW_PAWN_MASK) << 8) & (~sided_board.all_pieces);
 
     uint64_t most_significant_take_mb = 0ULL;
-    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7)) << 9;
+    most_significant_take_mb |= 
+	(pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7)) << 9;
     most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK) << 7;
-    most_significant_take_mb &= other_pieces;
+    most_significant_take_mb &= sided_board.other_pieces;
 
     uint64_t least_significant_take_mb = 0ULL;
     least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK) << 9;
-    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) << 7;
-    least_significant_take_mb &= other_pieces;
+    least_significant_take_mb |= 
+	(pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) << 7;
+    least_significant_take_mb &= sided_board.other_pieces;
     
     
     while (forward_mb) {
@@ -538,7 +582,7 @@ void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position - 8;
 	Move pawn_move = Move(from, pawn_position, PAWN, -1);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	forward_mb &= ~pawn;
     }
 
@@ -548,7 +592,7 @@ void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position - 16;
 	Move pawn_move = Move(from, pawn_position, PAWN, -1);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	double_forward_mb &= ~pawn;
     }
     
@@ -568,7 +612,7 @@ void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 
 	int taken_position = detectTakenPiece(pawn);
 	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	most_significant_take_mb &= ~pawn;
     }
 
@@ -587,33 +631,37 @@ void Board::whitePawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	    from = pawn_position - 9;
 	int taken_position = detectTakenPiece(pawn);
 	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	least_significant_take_mb &= ~pawn;
     }
  
 }
 
 
-void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_pieces, Moves *moves){ 
+void Board::blackPawnMoves(uint64_t pawns){
     if (!pawns)
 	return;
     // mb = move board, can't be bothered to write it out
     
-    uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) >> 8) & (~all_pieces); 
-    uint64_t double_forward_mb = ((pawns & SECOND_ROW_PAWN_MASK) >> 16) & (~all_pieces); 
-    uint64_t promotion_mb = ((pawns & SEVENTH_ROW_PAWN_MASK) >> 8) & (~all_pieces);
+    uint64_t forward_mb = ((pawns & (FORWARD_PAWN_MASK)) >> 8) & (~sided_board.all_pieces); 
+    uint64_t double_forward_mb = 
+	((pawns & SECOND_ROW_PAWN_MASK) >> 16) & (~sided_board.all_pieces); 
+    uint64_t promotion_mb = 
+	((pawns & SEVENTH_ROW_PAWN_MASK) >> 8) & (~sided_board.all_pieces);
 
     // 11001100
     uint64_t most_significant_take_mb = 0ULL;
-    most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7))  >> 7;
+    most_significant_take_mb |= 
+	(pawns & MOST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(7))  >> 7;
     most_significant_take_mb |= (pawns & MOST_SIGNIFICANT_PAWN_MASK) >> 9;
-    most_significant_take_mb &= other_pieces;
+    most_significant_take_mb &= sided_board.other_pieces;
 
     // 00110011
     uint64_t least_significant_take_mb = 0ULL;
     least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK) >> 7;
-    least_significant_take_mb |= (pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) >> 9;
-    least_significant_take_mb &= other_pieces;
+    least_significant_take_mb |= 
+	(pawns & LEAST_SIGNIFICANT_PAWN_MASK & ~bithack.getVertical(0)) >> 9;
+    least_significant_take_mb &= sided_board.other_pieces;
 
 
     while (forward_mb) {
@@ -621,7 +669,7 @@ void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position + 8;
 	Move pawn_move = Move(from, pawn_position, PAWN, -1);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	forward_mb &= ~pawn;
     }
 
@@ -631,7 +679,7 @@ void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	uint64_t pawn = 1ULL << pawn_position;
 	int from = pawn_position + 16;
 	Move pawn_move = Move(from, pawn_position, PAWN, -1);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	double_forward_mb &= ~pawn;
     }
 
@@ -653,7 +701,7 @@ void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	    from = pawn_position + 9;
 	int taken_position = detectTakenPiece(pawn);
 	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	most_significant_take_mb &= ~pawn;
     }
 
@@ -674,7 +722,7 @@ void Board::blackPawnMoves(uint64_t pawns, uint64_t all_pieces, uint64_t other_p
 	    from = pawn_position + 7;
 	int taken_position = detectTakenPiece(pawn);
 	Move pawn_move = Move(from, pawn_position, PAWN, taken_position);
-	moves->setMove(pawn_move);
+	next_moves->setMove(pawn_move);
 	least_significant_take_mb &= ~pawn;
     }
  
@@ -731,6 +779,7 @@ void Board::initializeFromFen(Fen fen_obj){
 
 
 }
+
 
 
 bool Board::isLegal(Move move){
@@ -808,7 +857,8 @@ bool Board::isLegal(Move move){
     }
     else if (move.type == QUEEN){
 	if (!(dx == 0 || dy == 0 || abs(dx) == abs(dy))){
-	    errFile << "Queen move direction is not valid: " << from << " to " << to << "\n";
+	    errFile << "Queen move direction is not valid: " << from << 
+		" to " << to << "\n";
 	    returnBool = false;
 	}
 
@@ -816,40 +866,53 @@ bool Board::isLegal(Move move){
     }
     else if (move.type == ROOK){
 	if (dx != 0 && dy != 0){
-	    errFile << "Rook move direction is not valid: " << from << " to " << to << "\n";
+	    errFile << "Rook move direction is not valid: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 	}
     }
     else if (move.type == BISHOP){
 	if (dx != dy){
-	    errFile << "Bishop move direction is not valid: " << from << " to " << to << "\n";
+	    errFile << "Bishop move direction is not valid: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 	}
 
     }
     else if (move.type == KNIGHT){
 	if (dx == 0 || dy == 0 || abs(dx) + abs(dy) != 3){
-	    errFile << "Knight move is not valid: " << from << " to " << to << "\n";
+	    errFile << "Knight move is not valid: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 	}
 
     }
     else if (move.type == PAWN){
-	if (!((dx == 0 && dy == 1) || (dx == 1 && dy == 1) || (dx == 0 && dy == 2))){
-	    errFile << "Pawn move is not valid: " << from << " to " << to << "\n";
+	if (!(
+	    (dx == 0 && dy == 1) || 
+	    (dx == 1 && dy == 1) || 
+	    (dx == 0 && dy == 2))){
+
+	    errFile << "Pawn move is not valid: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 	}
 	if (abs(dx) + abs(dy) == 2 && !(to_board && opposite_pieces)){
-	    errFile << "Pawn is taking when no opponent piece on square: " << from << " to " << to << "\n";
+	    errFile << "Pawn is taking when no opponent piece on square: " 
+		<< from << " to " << to << "\n";
 	    returnBool = false;
 	}
-	if ((dx == 0 && dy == 1) && to_board & (opposite_pieces & friendly_pieces)){
-	    errFile << "Pawn is moving one space when blocked: " << from << " to " << to << "\n";
+	if ((dx == 0 && dy == 1) && 
+	    to_board & (opposite_pieces & friendly_pieces)){
+	    errFile << "Pawn is moving one space when blocked: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 
 	}
-	if ((dx == 0 && dy == 2) && to_board & (opposite_pieces & friendly_pieces)){
-	    errFile << "Pawn is moving two spaces when blocked: " << from << " to " << to << "\n";
+	if ((dx == 0 && dy == 2) && 
+	    to_board & (opposite_pieces & friendly_pieces)){
+	    errFile << "Pawn is moving two spaces when blocked: " << from 
+		<< " to " << to << "\n";
 	    returnBool = false;
 	}	
 
@@ -876,16 +939,3 @@ void Board::debug(){
 
 }
 
-
-/* 
-int main(){
-    Board board;
-    
-    //board.debug();
-    board.initializeFromFen("8/1q1q1q1q/P1P1P1P1/8/8/qqqq1q1q/1P1P1P1P/8 w - - 0 1");
-    board.printBoard();
-    Moves board_moves = board.getMoves();
-    board_moves.displayMoves();
-    
-}
-*/

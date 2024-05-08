@@ -54,31 +54,38 @@ uint64_t Bithack::directionalMask(int position, int direction){
 uint64_t Bithack::castRay(int position, int direction){
 
     if (direction == NORTH){
-        return getVertical(position) & directionalMask(position, POSITIVE);
+        return getVertical(position) 
+        & directionalMask(position, POSITIVE);
     }
 
     if (direction == NORTHEAST){
-        return getCounterDiagonal(position) & directionalMask(position, POSITIVE);
+        return getCounterDiagonal(position) 
+        & directionalMask(position, POSITIVE);
     }
 
     if (direction == EAST){
-        return getHorizontal(position) & directionalMask(position, NEGATIVE);
+        return getHorizontal(position) 
+        & directionalMask(position, NEGATIVE);
     }
 
     if (direction == SOUTHEAST){
-        return getDiagonal(position) & directionalMask(position, NEGATIVE);
+        return getDiagonal(position) 
+        & directionalMask(position, NEGATIVE);
     }
 
     if (direction == SOUTH){
-        return getVertical(position) & directionalMask(position, NEGATIVE);
+        return getVertical(position) 
+        & directionalMask(position, NEGATIVE);
     }
 
     if (direction == SOUTHWEST){
-        return getCounterDiagonal(position) & directionalMask(position, NEGATIVE);
+        return getCounterDiagonal(position) 
+        & directionalMask(position, NEGATIVE);
     }
 
     if (direction == WEST){
-        return getHorizontal(position) & directionalMask(position, POSITIVE);
+        return getHorizontal(position) 
+        & directionalMask(position, POSITIVE);
     }
 
     // else direction == NORTHWEST
