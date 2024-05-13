@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Engine VERSION 0.9)
 
 set(SOURCES
-    #    Debug.cpp
+    #Debug.cpp
     Driver.cpp
     PST.cpp
     Search.cpp

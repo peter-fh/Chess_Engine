@@ -19,6 +19,7 @@ public:
     int squares[2];
     int type;
     int take;
+    int eval;
 
     Move();
     

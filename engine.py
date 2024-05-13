@@ -17,15 +17,6 @@ def run_engine(http_fen):
     return engine_process.stdout
 
 
-def debug_engine(http_fen):
-    engine_process = subprocess.run(["./engine/build/Engine", http_fen],
-                                    capture_output=True, 
-                                    text=True)
-    print("Error:")
-    print(engine_process.stderr)
-    print("Out:")
-    print(engine_process.stdout)
-
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -39,5 +30,6 @@ def recieve_fen(fen):
 if __name__ == "__main__":
 
     http_fen = "rnbqkbnr_pppppppp_8_8_8_8_PPPPPPPP_RNBQKBNR+w+KQkq+-+0+1"
-    return_fen = debug_engine(http_fen)
+    return_fen = run_engine(http_fen)
+    print(return_fen)
 

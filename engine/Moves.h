@@ -8,8 +8,8 @@ class Moves{
     
 public:
     Moves(): index(0), len(0){} 
-    Move getMove();
-    Move randomMove();
+    Move* getMove();
+    Move* randomMove();
     void next();
     bool seek(int seekIndex);
     bool hasNext();
@@ -18,6 +18,7 @@ public:
     void setLast();
     int length();
     friend std::ostream& operator<<(std::ostream& out, Moves moves);
+    void sort();
     void displayMoves();        
 
 private:

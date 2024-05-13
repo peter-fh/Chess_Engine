@@ -9,6 +9,16 @@
 #include "PST.h"
 
 
+const int KING_EVAL = 20000;
+const int QUEEN_EVAL = 800;
+const int ROOK_EVAL = 500;
+const int BISHOP_EVAL = 315;
+const int KNIGHT_EVAL = 300;
+const int PAWN_EVAL = 100;
+const int evals[6] = {KING_EVAL, QUEEN_EVAL, ROOK_EVAL, BISHOP_EVAL, KNIGHT_EVAL, PAWN_EVAL};
+
+// TODO: destructor
+
 typedef struct SidedBoard{
     uint64_t same_pieces;
     uint64_t other_pieces;
@@ -23,8 +33,8 @@ public:
     Board(Board *inp_board);
 
     Moves* getMoves();
-    void makeMove(Move move);
-    void unmakeMove(Move move);
+    void makeMove(Move* move);
+    void unmakeMove(Move* move);
 
     int turn();
     string fen();
@@ -33,6 +43,7 @@ public:
     bool isLegal(Move move);
     bool validBoardState();
     int evaluate();
+    bool gameOver();
 
 private:
     uint64_t pieces[12];
@@ -65,8 +76,11 @@ private:
         uint64_t (Board::*getPieceMoves) (int));
     void processMoveBoard(uint64_t move_board,  int piece_position, int piece_type);
 
-    int evaluatePiece(uint64_t board, int* table, int evaluation);
+    int evaluatePiece(uint64_t board, uint64_t* table, int evaluation);
     void initializeSidedBoard();
+    void evaluateMove(Move* move);
+    void evaluateMoves(Moves* moves);
+    void sortMoves(Moves* moves);
 public: 
     void debug();
 

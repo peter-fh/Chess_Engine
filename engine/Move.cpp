@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Move::Move(): type(-1) {}
+Move::Move(): type(-1), eval(0) {}
 
 
 Move::Move(int from, int to, int inptype, int inptake) {
@@ -11,6 +11,7 @@ Move::Move(int from, int to, int inptype, int inptake) {
     squares[TO]= to;
     type = inptype;
     take = inptake;    
+    eval = 0;
 }
 
     
@@ -29,11 +30,11 @@ std::ostream& operator<<(std::ostream& out, const Move& move){
 
     string take_num = to_string(move.take);
     if (move.take > 0){
-        out << string() + piece + 'x' + column + row;
+        out << string() + piece + 'x' + column + row + ' ' + to_string(move.eval);
         return out;
     }
 
-    out << string() + piece + column + row;
+    out << string() + piece + column + row + ' ' + to_string(move.eval);
     return out;
 }
 

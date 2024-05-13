@@ -4,17 +4,35 @@
 #include <time.h>
 
 
-Move Moves::getMove(){
-    return moves[index];
+Move* Moves::getMove(){
+    return &moves[index];
 }
 
-Move Moves::randomMove(){
+Move* Moves::randomMove(){
     srand(time(NULL));
-    return moves[rand() % len];
+    Move* returnMove = new Move();
+    *returnMove = moves[rand()];
+    return returnMove;
 }
 
 void Moves::next(){
     index++;
+}
+
+
+void Moves::sort(){
+    for (int i=1; i < len; i++){
+        Move key = moves[i];
+        int j = i-1;
+
+        while (j >= 0 && moves[j].eval < key.eval){
+            moves[j+1] = moves[j];
+            j = j - 1;
+        }
+
+        moves[j+1] = key;
+    }
+
 }
 
 
@@ -72,10 +90,11 @@ std::ostream& operator<<(std::ostream& out, Moves moves){
 
     moves.seek(0);
 
-    out << moves.getMove().moveCode() << " ";
+    out << *moves.getMove() << " ";
+    Move* currentMove = moves.getMove();
     while (moves.hasNext()){
         moves.next();
-        out << moves.getMove().moveCode() << " ";
+        out << *moves.getMove() << " ";
     }
 
     out << "\n";

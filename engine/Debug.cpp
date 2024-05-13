@@ -14,16 +14,16 @@ public:
 	    return;
 	}
 
-	Moves board_moves = chess_board->getMoves();
-	while (board_moves.hasNext()){
+	Moves* board_moves = chess_board->getMoves();
+	while (board_moves->hasNext()){
 
-	    Move current_move = board_moves.getMove();
+	    Move* current_move = board_moves->getMove();
 
 	    chess_board->makeMove(current_move);
 	    dfs(chess_board, depth - 1);
 	    chess_board->unmakeMove(current_move);
 
-	    board_moves.next();
+	    board_moves->next();
 	}
 
     }
@@ -37,19 +37,19 @@ public:
 	    return;
 	}
 
-	Moves board_moves = chess_board->getMoves();
+	Moves* board_moves = chess_board->getMoves();
 	// board_moves.displayMoves();
 	// cout << "\n";
 
 	//while (chess_board->validBoardState() && board_moves.hasNext()){
-	while (board_moves.hasNext()){
+	while (board_moves->hasNext()){
 	    if (!chess_board->validBoardState()){
 		cout << chess_board;
 		cout << "Invalid state. Exiting.\n";
 		exit(0);
 	    } 
-	    Move current_move = board_moves.getMove();
-	    if (!chess_board->isLegal(current_move)){
+	    Move* current_move = board_moves->getMove();
+	    if (!chess_board->isLegal(*current_move)){
 		// cout << "Illegal move found\n";
 	    } 
 
@@ -57,7 +57,7 @@ public:
 	    // cout << current_move.moveCode();
 	    dfsDebug(chess_board, depth - 1);
 	    chess_board->unmakeMove(current_move);
-	    board_moves.next();
+	    board_moves->next();
 	}
 
     }
@@ -65,16 +65,16 @@ public:
     void playGame(){
 	Board board = Board(Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
 	Board *chess_board = &board;
-	Moves board_moves = chess_board->getMoves();
-	while (board_moves.length() != 0 ){
+	Moves* board_moves = chess_board->getMoves();
+	while (board_moves->length() != 0 ){
 	    // cout << "BEFORE MOVES:\n";
 	    cout << chess_board;
 	    if (!chess_board->validBoardState()){
 		cout << "Invalid state. Exiting.\n";
 		exit(0);
 	    }
-	    Move random_move = board_moves.randomMove();
-	    chess_board->makeMove(random_move);
+	    Move random_move = board_moves->randomMove();
+	    chess_board->makeMove(&random_move);
 	    // cout << "AFTER 1 MOVE:\n";
 	    // cout << chess_board->toString();
 	    // chess_board->unmakeMove(random_move);
@@ -105,27 +105,27 @@ public:
 	Move *move2 = new Move(48, 40, 5, false);
 	Move *move3 = new Move(16, 24, 5, false);
 
-	chess_board->makeMove(*move1);
+	chess_board->makeMove(move1);
 	cout << "First move:\n";
 	cout << chess_board;
 
-	chess_board->makeMove(*move2);
+	chess_board->makeMove(move2);
 	cout << "Second move:\n";
 	cout << chess_board;
 
-	chess_board->makeMove(*move3);
+	chess_board->makeMove(move3);
 	cout << "Third move:\n";
 	cout << chess_board;
 
-	chess_board->unmakeMove(*move3);
+	chess_board->unmakeMove(move3);
 	cout << "Unmade move 3:\n"; 
 	cout << chess_board;
 
-	chess_board->unmakeMove(*move2);
+	chess_board->unmakeMove(move2);
 	cout << "Unmade move 2:\n"; 
 	cout << chess_board;
 
-	chess_board->unmakeMove(*move1);
+	chess_board->unmakeMove(move1);
 	cout << "Unmade move 1:\n"; 
 	cout << chess_board;
     }
@@ -150,17 +150,26 @@ public:
 	Move *move2 = new Move(48, 40, 5, 0);
 	Move *move3 = new Move(16, 24, 5, 0);
 	cout << "eval 0: " << board->evaluate() << "\n";
-	board->makeMove(*move1);
+	board->makeMove(move1);
 	cout << "made move: "  << *move1 << "\n";
 	cout << "eval 1: " << board->evaluate() << "\n";
-	board->makeMove(*move2);
+	board->makeMove(move2);
 	cout << "made move: "  << *move2 << "\n";
 	cout << "eval 2: " << board->evaluate() << "\n";
+
+    }
+
+    static void debugSorting(){
+	string str_fen= "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	Fen fen(str_fen);
+	Board* board = new Board(fen);
+	Moves* board_moves = board->getMoves();
+	cout << *board_moves;
 
     }
 };
 
 
 int main(){
-    Debug::debugEvaluate();
+    Debug::debugSorting();
 }

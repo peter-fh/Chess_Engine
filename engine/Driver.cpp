@@ -30,8 +30,10 @@ int main(int argc, char* argv[]){
     string fen = decode_fen(http_fen);
     Fen c_fen(fen);
     Board *board = new Board(c_fen);
-    Move *engine_move = negaMaxRoot(board, 5);
-    board->makeMove(*engine_move);
+    Move *engine_move = alphaBetaMinimaxRoot(board, 6);
+    std::cerr << "engine move: " << *engine_move << "\n";
+    std::cerr << "board: " << *board << "\n";
+    board->makeMove(engine_move);
     cout << board->fen();
     free(board);
     free(engine_move);
