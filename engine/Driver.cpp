@@ -2,7 +2,7 @@
 using std::cout;
 //using std::cerr;
 
-string decode_fen(string http_fen){
+/* string decode_fen(string http_fen){
     std::unordered_map<char, char> decode_map;
 
     decode_map['_'] = '/';
@@ -19,20 +19,21 @@ string decode_fen(string http_fen){
     }
     return fen;
 }
-
+*/
 
 int main(int argc, char* argv[]){
     if (argc != 2){
-        cout << "Invalid call to Driver.cpp (requires http encoded fen)\n";
+        cout << "Invalid call to Driver.cpp (requires one fen as argument)\n";
         return 1;
     }
-    string http_fen = argv[1];
-    string fen = decode_fen(http_fen);
+    /* string http_fen = argv[1];
+    string fen = decode_fen(http_fen); */
+    string fen = argv[1];
     Fen c_fen(fen);
     Board *board = new Board(c_fen);
-    Move *engine_move = alphaBetaMinimaxRoot(board, 6);
+    Move *engine_move = alphaBetaMinimaxRoot(board, 7);
     std::cerr << "engine move: " << *engine_move << "\n";
-    std::cerr << "board: " << *board << "\n";
+    //std::cerr << "board:\n" << *board << "\n";
     board->makeMove(engine_move);
     cout << board->fen();
     free(board);

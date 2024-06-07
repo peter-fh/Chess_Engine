@@ -104,7 +104,9 @@ void Board::initializeSidedBoard(){
 #define BISHOP_INDEX half_turn % 2 == 0 ? BISHOP : BISHOP + 6
 #define KNIGHT_INDEX half_turn % 2 == 0 ? KNIGHT : KNIGHT + 6
 #define PAWN_INDEX half_turn % 2 == 0 ? PAWN : PAWN + 6
-// TODO: organize based on potential
+// TODO: Castling
+// TODO: En passant
+
 Moves* Board::getMoves(){
     next_moves = new Moves();
 
@@ -338,6 +340,7 @@ void Board::evaluateMove(Move* move){
     } 
     int take_type;
     uint64_t move_board = 1ULL << move->squares[1];
+    index_adder = 6 - index_adder;
     for (int i=index_adder; i < index_adder + 6; i++){
 	if (move_board & pieces[i]){
 	    take_type = i % 6;

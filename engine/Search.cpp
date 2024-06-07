@@ -1,8 +1,8 @@
 #include <limits.h>
 #include <algorithm>
 #include "Search.h"
-using std::cerr;
 
+int leaf_positions;
 
 Move* alphaBetaMinimaxRoot(Board* board, int depth){
     if (depth <= 0){
@@ -12,6 +12,7 @@ Move* alphaBetaMinimaxRoot(Board* board, int depth){
     int alpha = std::numeric_limits<int>::min();
     int beta = std::numeric_limits<int>::max();
     Move* engineMove = new Move();
+    leaf_positions = 0;
 
     if (maximizingPlayer){
         int max_eval = std::numeric_limits<int>::min();
@@ -21,6 +22,7 @@ Move* alphaBetaMinimaxRoot(Board* board, int depth){
         while (!move->isNull()){
             board->makeMove(move);
             int eval = alphaBetaMinimax(board, depth-1, alpha, beta, false); 
+            std::cerr << *move << " " << eval << "\n";
             board->unmakeMove(move);
             if (eval > max_eval){
                 max_eval = eval;
@@ -43,6 +45,7 @@ Move* alphaBetaMinimaxRoot(Board* board, int depth){
     while (!move->isNull()){
         board->makeMove(move);
         int eval = alphaBetaMinimax(board, depth-1, alpha, beta, true);
+        std::cerr << *move << " " << eval << "\n";
         board->unmakeMove(move);
         if (eval < min_eval){
             min_eval = eval;
@@ -52,21 +55,24 @@ Move* alphaBetaMinimaxRoot(Board* board, int depth){
         if (beta <= alpha){
             break;
         }
-        cerr << "Board after unmaking " << *move << ":\n" << *board << std::endl;
+        // std::cerr << "Board after unmaking " << *move << ":\n" << *board << std::endl;
         leaf_moves->next();
         move = leaf_moves->getMove();
     }
-    cerr << "Engine choice: " << *engineMove << "\n";
-    cerr << "Board inside alphaBetaMaxRoot: " << *board << "\n";
+    // std::cerr << "Engine choice: " << *engineMove << "\n";
+    // std::cerr << "Board inside alphaBetaMaxRoot: " << *board << "\n";
+    std::cerr << "leaf positions: " << leaf_positions << "\n";
     return engineMove;
 }
+
+
 int alphaBetaMinimax(Board* board, int depth, int alpha, int beta, bool maximizingPlayer){
     if (depth == 0 || board->gameOver()){
+        leaf_positions++;
         return board->evaluate();
     }
 
     if (maximizingPlayer){
-        cerr << "board inside alphaBetaMax: " << *board << "\n";
         int max_eval = std::numeric_limits<int>::min();
         Moves* leaf_moves = board->getMoves();
         Move* move = leaf_moves->getMove();
@@ -79,9 +85,11 @@ int alphaBetaMinimax(Board* board, int depth, int alpha, int beta, bool maximizi
             if (beta <= alpha){
                 break;
             }
+            delete move;
             leaf_moves->next();
             move = leaf_moves->getMove();
         }
+        delete leaf_moves;
         return max_eval;
     }
 
@@ -97,9 +105,11 @@ int alphaBetaMinimax(Board* board, int depth, int alpha, int beta, bool maximizi
         if (beta <= alpha){
             break;
         }
+        delete move;
         leaf_moves->next();
         move = leaf_moves->getMove();
     }
+    delete leaf_moves;
     return min_eval;
 }
 
@@ -107,12 +117,12 @@ Move* negaMaxRoot(Board* board, int depth){
     Move* bestMove = new Move(); 
     int value = std::numeric_limits<int>::min();
     Moves* leaf_moves = board->getMoves();
-    //cerr << leaf_moves;
+    //std::cerr << leaf_moves;
     Move* move = leaf_moves->getMove();
     while (!move->isNull()){
         board->makeMove(move);
         int next_value = -negaMax(board, depth-1);
-        // cerr << *move << " " << next_value << "\n";
+        // std::cerr << *move << " " << next_value << "\n";
         if (next_value > value){
             bestMove = move; 
             value = next_value;
@@ -123,7 +133,7 @@ Move* negaMaxRoot(Board* board, int depth){
     }
     free(leaf_moves);
 
-    //cerr << "best move at depth " << depth << ": " << *bestMove << "\n";
+    //std::cerr << "best move at depth " << depth << ": " << *bestMove << "\n";
 
     return bestMove;
 }
@@ -152,7 +162,7 @@ int negaMax(Board* board, int depth){
     }
     free(leaf_moves);
 
-    //cerr << "best move at depth " << depth << ": " << *bestMove << "\n";
+    //std::cerr << "best move at depth " << depth << ": " << *bestMove << "\n";
 
     return value;
 }

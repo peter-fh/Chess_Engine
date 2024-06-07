@@ -1,6 +1,5 @@
 #include "Board.h"
 
-// TODO: alpha beta pruning
 // TODO: quiescent search
 
 Move* alphaBetaMinimaxRoot(Board* board, int depth);
