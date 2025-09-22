@@ -70,6 +70,6 @@ func printBody(res *http.Response) error{
     return nil
 }
 
-func main(){
-    TestHTTPCall()
-}
+// func main(){
+//     TestHTTPCall()
+// }
